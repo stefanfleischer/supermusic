@@ -1,5 +1,4 @@
 import { Minus, Plus } from 'lucide-react'
-import { useState } from 'react'
 import { transposeKey, keyUsesFlats } from '@/lib/chordpro/transpose'
 import { ALL_KEYS, NOTE_TO_INDEX } from '@/lib/chordpro/constants'
 
@@ -8,9 +7,11 @@ interface TransposeControlsProps {
   transposeSemitones: number
   capo: number
   capoEnabled: boolean
+  preferFlats: boolean
   onTransposeChange: (semitones: number) => void
   onCapoChange: (capo: number) => void
   onCapoEnabledChange: (enabled: boolean) => void
+  onPreferFlatsChange: (preferFlats: boolean) => void
 }
 
 export default function TransposeControls({
@@ -18,15 +19,14 @@ export default function TransposeControls({
   transposeSemitones,
   capo,
   capoEnabled,
+  preferFlats,
   onTransposeChange,
   onCapoChange,
   onCapoEnabledChange,
+  onPreferFlatsChange,
 }: TransposeControlsProps) {
   // Effective capo: only applied when enabled
   const effectiveCapo = capoEnabled ? capo : 0
-
-  // Track flat/sharp preference separately so user selection (e.g. Bb vs A#) is preserved
-  const [preferFlats, setPreferFlats] = useState(() => keyUsesFlats(originalKey))
 
   // Key display is independent of capo — always shows originalKey + transposeSemitones
   const currentKey = originalKey
@@ -35,12 +35,11 @@ export default function TransposeControls({
 
   function handleKeySelect(newKey: string) {
     if (!originalKey) return
-    // Remember the user's flat/sharp preference from their selection
-    setPreferFlats(newKey.includes('b') && newKey !== 'B')
+    // Propagate flat/sharp preference from user's selection
+    onPreferFlatsChange(newKey.includes('b') && newKey !== 'B')
     const originalIndex = NOTE_TO_INDEX[originalKey] ?? 0
     const newIndex = NOTE_TO_INDEX[newKey] ?? 0
     const diff = ((newIndex - originalIndex) % 12 + 12) % 12
-    // Prefer the shorter path (e.g. -1 instead of +11)
     const rawSemitones = diff > 6 ? diff - 12 : diff
     onTransposeChange(rawSemitones)
   }

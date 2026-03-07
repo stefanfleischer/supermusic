@@ -6,16 +6,18 @@ import SongSection from './SongSection'
 interface SongRendererProps {
   parsedSong: ParsedSong
   transposeSemitones?: number
+  preferFlats?: boolean
 }
 
 export default function SongRenderer({
   parsedSong,
   transposeSemitones = 0,
+  preferFlats,
 }: SongRendererProps) {
   const displaySong = useMemo(() => {
-    const preferFlats = keyUsesFlats(parsedSong.metadata.key)
-    return transposeParsedSong(parsedSong, transposeSemitones, preferFlats)
-  }, [parsedSong, transposeSemitones])
+    const flats = preferFlats !== undefined ? preferFlats : keyUsesFlats(parsedSong.metadata.key)
+    return transposeParsedSong(parsedSong, transposeSemitones, flats)
+  }, [parsedSong, transposeSemitones, preferFlats])
 
   return (
     <div className="font-sans text-base">

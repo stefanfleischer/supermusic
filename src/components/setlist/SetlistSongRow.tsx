@@ -50,7 +50,13 @@ export default function SetlistSongRow({
   return (
     <div
       draggable
-      onDragStart={onDragStart}
+      onDragStart={(e) => {
+        if ((e.target as HTMLElement).tagName === 'INPUT') {
+          e.preventDefault()
+          return
+        }
+        onDragStart()
+      }}
       onDragOver={onDragOver}
       onDrop={onDrop}
       onDragEnd={onDragEnd}
@@ -75,6 +81,7 @@ export default function SetlistSongRow({
             value={entry.momentTitle}
             onChange={(e) => onUpdate({ momentTitle: e.target.value })}
             onMouseDown={(e) => e.stopPropagation()}
+            onDragStart={(e) => e.preventDefault()}
             placeholder="Moment title…"
             className="min-w-0 flex-1 bg-transparent text-amber-300 text-sm font-medium placeholder-amber-700 focus:outline-none"
           />

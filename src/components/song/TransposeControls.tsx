@@ -36,7 +36,7 @@ export default function TransposeControls({
   function handleKeySelect(newKey: string) {
     if (!originalKey) return
     // Propagate flat/sharp preference from user's selection
-    onPreferFlatsChange(newKey.includes('b') && newKey !== 'B')
+    onPreferFlatsChange(keyUsesFlats(newKey))
     const originalIndex = NOTE_TO_INDEX[originalKey] ?? 0
     const newIndex = NOTE_TO_INDEX[newKey] ?? 0
     const diff = ((newIndex - originalIndex) % 12 + 12) % 12

@@ -26,7 +26,7 @@ export default function SongSection({ section }: SongSectionProps) {
               ? 'text-cyan-400'
               : isBridge
                 ? 'text-purple-400'
-                : 'text-gray-500'
+                : 'text-white font-bold'
           }`}
         >
           {section.label}

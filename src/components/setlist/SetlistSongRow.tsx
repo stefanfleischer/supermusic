@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { GripVertical, X, Minus, Plus, Clock } from 'lucide-react'
 import type { Song, SetlistEntry } from '@/lib/types'
 import { transposeKey, keyUsesFlats } from '@/lib/chordpro/transpose'
@@ -33,6 +33,7 @@ export default function SetlistSongRow({
 }: SetlistSongRowProps) {
   const isMoment = entry.momentTitle !== undefined
   const gripRef = useRef<HTMLDivElement>(null)
+  const [draggable, setDraggable] = useState(false)
 
   if (!isMoment && !song) return null
 
@@ -51,21 +52,20 @@ export default function SetlistSongRow({
 
   return (
     <div
-      draggable
-      onDragStart={(e) => {
-        if (!gripRef.current?.contains(e.target as Node)) {
-          e.preventDefault()
-          return
-        }
-        onDragStart()
-      }}
+      draggable={draggable}
+      onDragStart={onDragStart}
       onDragOver={onDragOver}
       onDrop={onDrop}
-      onDragEnd={onDragEnd}
+      onDragEnd={() => { setDraggable(false); onDragEnd() }}
       className={`flex items-center gap-2 p-3 border rounded-lg transition-all ${dragClass}`}
     >
-      {/* Drag handle */}
-      <div ref={gripRef} className="cursor-grab active:cursor-grabbing text-gray-500 hover:text-gray-300 shrink-0 touch-none">
+      {/* Drag handle — only this activates dragging */}
+      <div
+        ref={gripRef}
+        onMouseDown={() => setDraggable(true)}
+        onMouseUp={() => setDraggable(false)}
+        className="cursor-grab active:cursor-grabbing text-gray-500 hover:text-gray-300 shrink-0 touch-none select-none"
+      >
         <GripVertical size={18} />
       </div>
 

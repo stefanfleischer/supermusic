@@ -1,4 +1,4 @@
-import { ChevronUp, ChevronDown, X, Minus, Plus } from 'lucide-react'
+import { GripVertical, X, Minus, Plus } from 'lucide-react'
 import type { Song, SetlistEntry } from '@/lib/types'
 import { transposeKey, keyUsesFlats } from '@/lib/chordpro/transpose'
 import Badge from '@/components/ui/Badge'
@@ -7,20 +7,28 @@ interface SetlistSongRowProps {
   entry: SetlistEntry
   song: Song | undefined
   index: number
-  total: number
-  onMove: (direction: 'up' | 'down') => void
+  isDragging: boolean
+  isDragOver: boolean
   onRemove: () => void
   onUpdate: (updates: Partial<SetlistEntry>) => void
+  onDragStart: () => void
+  onDragOver: (e: React.DragEvent) => void
+  onDrop: () => void
+  onDragEnd: () => void
 }
 
 export default function SetlistSongRow({
   entry,
   song,
   index,
-  total,
-  onMove,
+  isDragging,
+  isDragOver,
   onRemove,
   onUpdate,
+  onDragStart,
+  onDragOver,
+  onDrop,
+  onDragEnd,
 }: SetlistSongRowProps) {
   if (!song) return null
 
@@ -30,29 +38,29 @@ export default function SetlistSongRow({
       : song.key
 
   return (
-    <div className="flex items-center gap-2 p-3 bg-slate-800/50 border border-slate-700 rounded-lg">
+    <div
+      draggable
+      onDragStart={onDragStart}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
+      onDragEnd={onDragEnd}
+      className={`flex items-center gap-2 p-3 border rounded-lg transition-all ${
+        isDragging
+          ? 'opacity-40 border-cyan-500 bg-slate-700/50'
+          : isDragOver
+            ? 'border-cyan-400 bg-cyan-900/20 scale-[1.01]'
+            : 'bg-slate-800/50 border-slate-700'
+      }`}
+    >
+      {/* Drag handle */}
+      <div className="cursor-grab active:cursor-grabbing text-gray-500 hover:text-gray-300 shrink-0 touch-none">
+        <GripVertical size={18} />
+      </div>
+
       {/* Order number */}
-      <span className="text-gray-500 text-sm w-6 text-center shrink-0">
+      <span className="text-gray-500 text-sm w-5 text-center shrink-0">
         {index + 1}
       </span>
-
-      {/* Move buttons */}
-      <div className="flex flex-col shrink-0">
-        <button
-          onClick={() => onMove('up')}
-          disabled={index === 0}
-          className="p-0.5 text-gray-500 hover:text-white disabled:opacity-20 transition-colors"
-        >
-          <ChevronUp size={14} />
-        </button>
-        <button
-          onClick={() => onMove('down')}
-          disabled={index === total - 1}
-          className="p-0.5 text-gray-500 hover:text-white disabled:opacity-20 transition-colors"
-        >
-          <ChevronDown size={14} />
-        </button>
-      </div>
 
       {/* Song info */}
       <div className="min-w-0 flex-1">

@@ -16,6 +16,8 @@ export default function SetlistEditor({
 }: SetlistEditorProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [showPicker, setShowPicker] = useState(false)
+  const [dragIndex, setDragIndex] = useState<number | null>(null)
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
 
   const entryIds = new Set(entries.map((e) => e.songId))
   const availableSongs = allSongs.filter((s) => !entryIds.has(s.id))
@@ -38,15 +40,14 @@ export default function SetlistEditor({
     onChange(entries.filter((_, i) => i !== index))
   }
 
-  function moveSong(index: number, direction: 'up' | 'down') {
+  function handleDrop(targetIndex: number) {
+    if (dragIndex === null || dragIndex === targetIndex) return
     const newEntries = [...entries]
-    const targetIndex = direction === 'up' ? index - 1 : index + 1
-    if (targetIndex < 0 || targetIndex >= newEntries.length) return
-    ;[newEntries[index], newEntries[targetIndex]] = [
-      newEntries[targetIndex],
-      newEntries[index],
-    ]
+    const [moved] = newEntries.splice(dragIndex, 1)
+    newEntries.splice(targetIndex, 0, moved)
     onChange(newEntries)
+    setDragIndex(null)
+    setDragOverIndex(null)
   }
 
   function updateEntry(index: number, updates: Partial<SetlistEntry>) {
@@ -127,8 +128,12 @@ export default function SetlistEditor({
               entry={entry}
               song={allSongs.find((s) => s.id === entry.songId)}
               index={index}
-              total={entries.length}
-              onMove={(dir) => moveSong(index, dir)}
+              isDragging={dragIndex === index}
+              isDragOver={dragOverIndex === index && dragIndex !== index}
+              onDragStart={() => setDragIndex(index)}
+              onDragOver={(e) => { e.preventDefault(); setDragOverIndex(index) }}
+              onDrop={() => handleDrop(index)}
+              onDragEnd={() => { setDragIndex(null); setDragOverIndex(null) }}
               onRemove={() => removeSong(index)}
               onUpdate={(updates) => updateEntry(index, updates)}
             />

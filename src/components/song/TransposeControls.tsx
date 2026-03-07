@@ -1,4 +1,4 @@
-import { Minus, Plus, Type, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Minus, Plus, Type, ChevronLeft, ChevronRight, Clock } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
 import { transposeKey, keyUsesFlats } from '@/lib/chordpro/transpose'
 import { ALL_KEYS, NOTE_TO_INDEX } from '@/lib/chordpro/constants'
@@ -32,7 +32,8 @@ interface TransposeControlsProps {
   hasNext?: boolean
   navIndex?: number     // 0-based current index
   navTotal?: number     // total entries
-  navItems?: string[]   // song titles for dropdown
+  navItems?: string[]         // song titles for dropdown
+  navItemMoments?: boolean[]  // true = moment entry
   onNavSelect?: (index: number) => void
 }
 
@@ -55,6 +56,7 @@ export default function TransposeControls({
   navIndex,
   navTotal,
   navItems,
+  navItemMoments,
   onNavSelect,
 }: TransposeControlsProps) {
   const [formatOpen, setFormatOpen] = useState(false)
@@ -193,20 +195,24 @@ export default function TransposeControls({
               </button>
               {navOpen && navItems && (
                 <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 z-50 bg-slate-800 border border-slate-600 rounded-xl shadow-xl py-1 min-w-48 max-h-64 overflow-y-auto">
-                  {navItems.map((title, i) => (
-                    <button
-                      key={i}
-                      onClick={() => { onNavSelect?.(i); setNavOpen(false) }}
-                      className={`w-full text-left px-4 py-2 text-sm transition-colors flex items-center gap-2 ${
-                        i === navIndex
-                          ? 'bg-cyan-600 text-white'
-                          : 'text-gray-300 hover:bg-slate-700 hover:text-white'
-                      }`}
-                    >
-                      <span className="text-gray-500 font-mono text-xs w-5 shrink-0">{i + 1}.</span>
-                      <span className="truncate">{title}</span>
-                    </button>
-                  ))}
+                  {navItems.map((title, i) => {
+                    const isMoment = navItemMoments?.[i] ?? false
+                    return (
+                      <button
+                        key={i}
+                        onClick={() => { onNavSelect?.(i); setNavOpen(false) }}
+                        className={`w-full text-left px-4 py-2 text-sm transition-colors flex items-center gap-2 ${
+                          i === navIndex
+                            ? 'bg-cyan-600 text-white'
+                            : 'text-gray-300 hover:bg-slate-700 hover:text-white'
+                        }`}
+                      >
+                        <span className="text-gray-500 font-mono text-xs w-5 shrink-0">{i + 1}.</span>
+                        {isMoment && <Clock size={12} className="text-amber-400 shrink-0" />}
+                        <span className={`truncate ${isMoment ? 'italic text-amber-300' : ''}`}>{title}</span>
+                      </button>
+                    )
+                  })}
                 </div>
               )}
             </div>

@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useState, useMemo } from 'react'
-import { ArrowLeft, Edit, Trash2, X, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ArrowLeft, Edit, Trash2, X, ChevronLeft, ChevronRight, Clock } from 'lucide-react'
 import { getSetlist, deleteSetlist, updateSetlist } from '@/lib/server/setlists'
 import { getSongs } from '@/lib/server/songs'
 import { parseChordPro } from '@/lib/chordpro/parser'
@@ -86,18 +86,22 @@ function CurrentSongView({
             </button>
             {navOpen && (
               <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 z-50 bg-slate-800 border border-slate-600 rounded-xl shadow-xl py-1 min-w-48 max-h-64 overflow-y-auto">
-                {navItems.map((title, i) => (
-                  <button
-                    key={i}
-                    onClick={() => { onNavSelect(i); setNavOpen(false) }}
-                    className={`w-full text-left px-4 py-2 text-sm transition-colors flex items-center gap-2 ${
-                      i === currentIndex ? 'bg-cyan-600 text-white' : 'text-gray-300 hover:bg-slate-700 hover:text-white'
-                    }`}
-                  >
-                    <span className="text-gray-500 font-mono text-xs w-5 shrink-0">{i + 1}.</span>
-                    <span className="truncate">{title}</span>
-                  </button>
-                ))}
+                {navItems.map((title, i) => {
+                  const isMoment = entries[i]?.momentTitle !== undefined
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => { onNavSelect(i); setNavOpen(false) }}
+                      className={`w-full text-left px-4 py-2 text-sm transition-colors flex items-center gap-2 ${
+                        i === currentIndex ? 'bg-cyan-600 text-white' : 'text-gray-300 hover:bg-slate-700 hover:text-white'
+                      }`}
+                    >
+                      <span className="text-gray-500 font-mono text-xs w-5 shrink-0">{i + 1}.</span>
+                      {isMoment && <Clock size={12} className="text-amber-400 shrink-0" />}
+                      <span className={`truncate ${isMoment ? 'italic text-amber-300' : ''}`}>{title}</span>
+                    </button>
+                  )
+                })}
               </div>
             )}
           </div>
@@ -181,6 +185,7 @@ function CurrentSongView({
           navIndex={currentIndex}
           navTotal={entries.length}
           navItems={entries.map((e) => e.momentTitle !== undefined ? (e.momentTitle || 'Pause') : (songMap.get(e.songId)?.title ?? '–'))}
+          navItemMoments={entries.map((e) => e.momentTitle !== undefined)}
           onNavSelect={onNavSelect}
         />
       </div>

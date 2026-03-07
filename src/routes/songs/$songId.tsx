@@ -26,7 +26,19 @@ function SongViewPage() {
   const [capo, setCapo] = useState(song.capo)
   const [capoEnabled, setCapoEnabled] = useState(song.capo > 0)
   const [preferFlats, setPreferFlats] = useState(() => keyUsesFlats(song.key))
-  const [chordFormat, setChordFormat] = useState<ChordFormat>(defaultChordFormat)
+  const [chordFormat, setChordFormat] = useState<ChordFormat>(() => {
+    try {
+      const stored = localStorage.getItem('chordFormat')
+      return stored ? { ...defaultChordFormat, ...JSON.parse(stored) } : defaultChordFormat
+    } catch {
+      return defaultChordFormat
+    }
+  })
+
+  function handleChordFormatChange(format: ChordFormat) {
+    setChordFormat(format)
+    try { localStorage.setItem('chordFormat', JSON.stringify(format)) } catch {}
+  }
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
   const parsedSong = useMemo(() => parseChordPro(song.content), [song.content])
@@ -102,7 +114,7 @@ function SongViewPage() {
             onCapoChange={setCapo}
             onCapoEnabledChange={setCapoEnabled}
             onPreferFlatsChange={setPreferFlats}
-            onChordFormatChange={setChordFormat}
+            onChordFormatChange={handleChordFormatChange}
           />
         </div>
 

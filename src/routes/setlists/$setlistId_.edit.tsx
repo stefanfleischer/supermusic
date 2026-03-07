@@ -6,7 +6,7 @@ import { getSongs } from '@/lib/server/songs'
 import type { SetlistEntry } from '@/lib/types'
 import SetlistEditor from '@/components/setlist/SetlistEditor'
 
-export const Route = createFileRoute('/setlists/$setlistId/edit')({
+export const Route = createFileRoute('/setlists/$setlistId_/edit')({
   loader: async ({ params }) => {
     const [setlist, songs] = await Promise.all([
       getSetlist({ data: { id: params.setlistId } }),

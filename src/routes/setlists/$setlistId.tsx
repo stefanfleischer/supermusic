@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useState, useMemo } from 'react'
-import { ArrowLeft, Edit, Trash2, Music } from 'lucide-react'
-import { getSetlist, deleteSetlist } from '@/lib/server/setlists'
+import { ArrowLeft, Edit, Trash2, Music, X } from 'lucide-react'
+import { getSetlist, deleteSetlist, updateSetlist } from '@/lib/server/setlists'
 import { getSongs } from '@/lib/server/songs'
 import { parseChordPro } from '@/lib/chordpro/parser'
 import SongRenderer from '@/components/song/SongRenderer'
@@ -25,6 +25,8 @@ function SetlistViewPage() {
   const navigate = useNavigate()
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
+  const [entries, setEntries] = useState(setlist.songEntries)
+
   const songMap = useMemo(() => {
     const map = new Map(songs.map((s) => [s.id, s]))
     return map
@@ -33,6 +35,12 @@ function SetlistViewPage() {
   async function handleDelete() {
     await deleteSetlist({ data: { id: setlist.id } })
     navigate({ to: '/setlists' as '/' })
+  }
+
+  async function handleRemoveEntry(index: number) {
+    const updated = entries.filter((_, i) => i !== index)
+    setEntries(updated)
+    await updateSetlist({ data: { id: setlist.id, songEntries: updated } })
   }
 
   return (
@@ -84,9 +92,9 @@ function SetlistViewPage() {
         </div>
 
         {/* Setlist songs rendered sequentially */}
-        {setlist.songEntries.length > 0 ? (
+        {entries.length > 0 ? (
           <div className="space-y-8">
-            {setlist.songEntries.map((entry, index) => {
+            {entries.map((entry, index) => {
               const song = songMap.get(entry.songId)
               if (!song) return null
               const parsed = parseChordPro(song.content)
@@ -104,7 +112,7 @@ function SetlistViewPage() {
                     <Link
                       to="/songs/$songId"
                       params={{ songId: song.id }}
-                      className="text-white font-semibold hover:text-cyan-400 transition-colors"
+                      className="text-white font-semibold hover:text-cyan-400 transition-colors flex-1"
                     >
                       {song.title}
                     </Link>
@@ -120,6 +128,13 @@ function SetlistViewPage() {
                           : song.key}
                       </Badge>
                     )}
+                    <button
+                      onClick={() => handleRemoveEntry(index)}
+                      className="p-1 rounded text-gray-500 hover:text-red-400 hover:bg-red-400/10 transition-colors"
+                      title="Aus Setlist entfernen"
+                    >
+                      <X size={16} />
+                    </button>
                   </div>
                   <SongRenderer
                     parsedSong={parsed}

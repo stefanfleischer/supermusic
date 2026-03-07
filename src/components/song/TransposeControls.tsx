@@ -6,20 +6,27 @@ interface TransposeControlsProps {
   originalKey: string | null
   transposeSemitones: number
   capo: number
+  capoEnabled: boolean
   onTransposeChange: (semitones: number) => void
   onCapoChange: (capo: number) => void
+  onCapoEnabledChange: (enabled: boolean) => void
 }
 
 export default function TransposeControls({
   originalKey,
   transposeSemitones,
   capo,
+  capoEnabled,
   onTransposeChange,
   onCapoChange,
+  onCapoEnabledChange,
 }: TransposeControlsProps) {
-  // The key shown = original key + transpose - capo (i.e. the shapes the player actually frets)
+  // Effective capo: only applied when enabled
+  const effectiveCapo = capoEnabled ? capo : 0
+
+  // The key shown = original key + transpose - effectiveCapo (shapes the player actually frets)
   const currentKey = originalKey
-    ? transposeKey(originalKey, transposeSemitones - capo, keyUsesFlats(originalKey))
+    ? transposeKey(originalKey, transposeSemitones - effectiveCapo, keyUsesFlats(originalKey))
     : null
 
   function handleKeySelect(newKey: string) {
@@ -29,8 +36,8 @@ export default function TransposeControls({
     const diff = ((newIndex - originalIndex) % 12 + 12) % 12
     // Prefer the shorter path (e.g. -1 instead of +11)
     const rawSemitones = diff > 6 ? diff - 12 : diff
-    // Add capo back so that displayed key = original + (transposeSemitones - capo)
-    onTransposeChange(rawSemitones + capo)
+    // Add effectiveCapo back so that displayed key = original + (transposeSemitones - effectiveCapo)
+    onTransposeChange(rawSemitones + effectiveCapo)
   }
 
   return (
@@ -71,32 +78,43 @@ export default function TransposeControls({
 
       {/* Capo */}
       <div className="flex items-center gap-1">
-        <span className="text-xs text-gray-400 uppercase tracking-wider mr-1">
+        {/* Toggle */}
+        <button
+          onClick={() => onCapoEnabledChange(!capoEnabled)}
+          className={`text-xs uppercase tracking-wider mr-1 px-1 py-0.5 rounded transition-colors ${
+            capoEnabled
+              ? 'text-white font-semibold'
+              : 'text-gray-500 hover:text-gray-300'
+          }`}
+          title={capoEnabled ? 'Capo aktiv – klicken zum Deaktivieren' : 'Capo inaktiv – klicken zum Aktivieren'}
+        >
           Capo
-        </span>
-        <button
-          onClick={() => onCapoChange(Math.max(0, capo - 1))}
-          className="p-1 rounded hover:bg-slate-700 text-gray-400 hover:text-white transition-colors"
-        >
-          <Minus size={16} />
         </button>
-        <select
-          value={capo}
-          onChange={(e) => onCapoChange(Number(e.target.value))}
-          className="bg-slate-700 border border-slate-600 text-white text-sm rounded px-2 py-1 focus:outline-none focus:border-cyan-500"
-        >
-          {Array.from({ length: 13 }, (_, i) => (
-            <option key={i} value={i}>
-              {i}
-            </option>
-          ))}
-        </select>
-        <button
-          onClick={() => onCapoChange(Math.min(12, capo + 1))}
-          className="p-1 rounded hover:bg-slate-700 text-gray-400 hover:text-white transition-colors"
-        >
-          <Plus size={16} />
-        </button>
+        <div className={`flex items-center gap-1 transition-opacity ${capoEnabled ? 'opacity-100' : 'opacity-30 pointer-events-none'}`}>
+          <button
+            onClick={() => onCapoChange(Math.max(0, capo - 1))}
+            className="p-1 rounded hover:bg-slate-700 text-gray-400 hover:text-white transition-colors"
+          >
+            <Minus size={16} />
+          </button>
+          <select
+            value={capo}
+            onChange={(e) => onCapoChange(Number(e.target.value))}
+            className="bg-slate-700 border border-slate-600 text-white text-sm rounded px-2 py-1 focus:outline-none focus:border-cyan-500"
+          >
+            {Array.from({ length: 13 }, (_, i) => (
+              <option key={i} value={i}>
+                {i}
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={() => onCapoChange(Math.min(12, capo + 1))}
+            className="p-1 rounded hover:bg-slate-700 text-gray-400 hover:text-white transition-colors"
+          >
+            <Plus size={16} />
+          </button>
+        </div>
       </div>
 
 

@@ -22,6 +22,7 @@ function SongViewPage() {
   const navigate = useNavigate()
   const [transposeSemitones, setTransposeSemitones] = useState(0)
   const [capo, setCapo] = useState(song.capo)
+  const [capoEnabled, setCapoEnabled] = useState(song.capo > 0)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
   const parsedSong = useMemo(() => parseChordPro(song.content), [song.content])
@@ -90,8 +91,10 @@ function SongViewPage() {
             originalKey={song.key}
             transposeSemitones={transposeSemitones}
             capo={capo}
+            capoEnabled={capoEnabled}
             onTransposeChange={setTransposeSemitones}
             onCapoChange={setCapo}
+            onCapoEnabledChange={setCapoEnabled}
           />
         </div>
 
@@ -99,7 +102,7 @@ function SongViewPage() {
         <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
           <SongRenderer
             parsedSong={parsedSong}
-            transposeSemitones={transposeSemitones - capo}
+            transposeSemitones={transposeSemitones - (capoEnabled ? capo : 0)}
           />
         </div>
       </div>

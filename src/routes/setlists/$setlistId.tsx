@@ -27,6 +27,7 @@ function CurrentSongView({
   onPrev: () => void
   onNext: () => void
   onRemove: () => void
+  onNavSelect: (index: number) => void
 }) {
   const entry = entries[currentIndex]
   const song = songMap.get(entry.songId)
@@ -98,6 +99,8 @@ function CurrentSongView({
           hasNext={currentIndex < entries.length - 1}
           navIndex={currentIndex}
           navTotal={entries.length}
+          navItems={entries.map((e) => songMap.get(e.songId)?.title ?? '–')}
+          onNavSelect={onNavSelect}
         />
       </div>
 
@@ -208,6 +211,7 @@ function SetlistViewPage() {
             onPrev={() => setCurrentIndex((i) => Math.max(0, i - 1))}
             onNext={() => setCurrentIndex((i) => Math.min(entries.length - 1, i + 1))}
             onRemove={() => handleRemoveEntry(currentIndex)}
+            onNavSelect={(i) => setCurrentIndex(i)}
           />
         ) : (
           <div className="text-center py-12">

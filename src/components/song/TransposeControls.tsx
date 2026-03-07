@@ -30,8 +30,10 @@ interface TransposeControlsProps {
   onNext?: () => void
   hasPrev?: boolean
   hasNext?: boolean
-  navIndex?: number   // 0-based current index
-  navTotal?: number   // total entries
+  navIndex?: number     // 0-based current index
+  navTotal?: number     // total entries
+  navItems?: string[]   // song titles for dropdown
+  onNavSelect?: (index: number) => void
 }
 
 export default function TransposeControls({
@@ -52,20 +54,27 @@ export default function TransposeControls({
   hasNext,
   navIndex,
   navTotal,
+  navItems,
+  onNavSelect,
 }: TransposeControlsProps) {
   const [formatOpen, setFormatOpen] = useState(false)
   const formatRef = useRef<HTMLDivElement>(null)
+  const [navOpen, setNavOpen] = useState(false)
+  const navRef = useRef<HTMLDivElement>(null)
 
-  // Close overlay on outside click
+  // Close overlays on outside click
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (formatRef.current && !formatRef.current.contains(e.target as Node)) {
         setFormatOpen(false)
       }
+      if (navRef.current && !navRef.current.contains(e.target as Node)) {
+        setNavOpen(false)
+      }
     }
-    if (formatOpen) document.addEventListener('mousedown', handleClick)
+    if (formatOpen || navOpen) document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
-  }, [formatOpen])
+  }, [formatOpen, navOpen])
   // Effective capo: only applied when enabled
   const effectiveCapo = capoEnabled ? capo : 0
 
@@ -175,9 +184,32 @@ export default function TransposeControls({
             <ChevronLeft size={18} />
           </button>
           {navTotal !== undefined && navIndex !== undefined && (
-            <span className="text-gray-500 text-sm font-mono px-1">
-              {navIndex + 1}/{navTotal}
-            </span>
+            <div className="relative" ref={navRef}>
+              <button
+                onClick={() => setNavOpen((o) => !o)}
+                className="text-gray-400 hover:text-white text-sm font-mono px-2 py-0.5 rounded hover:bg-slate-700 transition-colors"
+              >
+                {navIndex + 1}/{navTotal}
+              </button>
+              {navOpen && navItems && (
+                <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 z-50 bg-slate-800 border border-slate-600 rounded-xl shadow-xl py-1 min-w-48 max-h-64 overflow-y-auto">
+                  {navItems.map((title, i) => (
+                    <button
+                      key={i}
+                      onClick={() => { onNavSelect?.(i); setNavOpen(false) }}
+                      className={`w-full text-left px-4 py-2 text-sm transition-colors flex items-center gap-2 ${
+                        i === navIndex
+                          ? 'bg-cyan-600 text-white'
+                          : 'text-gray-300 hover:bg-slate-700 hover:text-white'
+                      }`}
+                    >
+                      <span className="text-gray-500 font-mono text-xs w-5 shrink-0">{i + 1}.</span>
+                      <span className="truncate">{title}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           )}
           <button
             onClick={onNext}

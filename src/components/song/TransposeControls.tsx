@@ -72,10 +72,16 @@ export default function TransposeControls({
       </div>
 
       {/* Capo */}
-      <div className="flex items-center gap-2">
-        <span className="text-xs text-gray-400 uppercase tracking-wider">
+      <div className="flex items-center gap-1">
+        <span className="text-xs text-gray-400 uppercase tracking-wider mr-1">
           Capo
         </span>
+        <button
+          onClick={() => onCapoChange(Math.max(0, capo - 1))}
+          className="p-1 rounded hover:bg-slate-700 text-gray-400 hover:text-white transition-colors"
+        >
+          <Minus size={16} />
+        </button>
         <select
           value={capo}
           onChange={(e) => onCapoChange(Number(e.target.value))}
@@ -87,6 +93,12 @@ export default function TransposeControls({
             </option>
           ))}
         </select>
+        <button
+          onClick={() => onCapoChange(Math.min(12, capo + 1))}
+          className="p-1 rounded hover:bg-slate-700 text-gray-400 hover:text-white transition-colors"
+        >
+          <Plus size={16} />
+        </button>
       </div>
 
       {/* Capo key */}

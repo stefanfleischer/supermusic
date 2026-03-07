@@ -30,7 +30,7 @@ export default function SetlistSongRow({
   onDrop,
   onDragEnd,
 }: SetlistSongRowProps) {
-  const isMoment = !!entry.momentTitle
+  const isMoment = entry.momentTitle !== undefined
 
   if (!isMoment && !song) return null
 

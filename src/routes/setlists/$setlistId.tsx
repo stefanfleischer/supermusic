@@ -55,14 +55,42 @@ function CurrentSongView({
 
   const parsed = useMemo(() => song ? parseChordPro(song.content) : null, [song])
 
-  // Moment: show only title, no song content
+  // Moment: show title + nav controls, no song content
   if (entry.momentTitle !== undefined) {
+    const navItems = entries.map((e) =>
+      e.momentTitle !== undefined ? (e.momentTitle || 'Pause') : (songMap.get(e.songId)?.title ?? '–')
+    )
     return (
-      <div className="flex flex-col items-center justify-center py-16 gap-3">
-        <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center">
-          <span className="text-2xl">⏸</span>
+      <div>
+        <div className="mb-6">
+          <TransposeControls
+            originalKey={null}
+            transposeSemitones={0}
+            capo={0}
+            capoEnabled={false}
+            preferFlats={false}
+            chordFormat={chordFormat}
+            onTransposeChange={() => {}}
+            onCapoChange={() => {}}
+            onCapoEnabledChange={() => {}}
+            onPreferFlatsChange={() => {}}
+            onChordFormatChange={handleChordFormatChange}
+            onPrev={onPrev}
+            onNext={onNext}
+            hasPrev={currentIndex > 0}
+            hasNext={currentIndex < entries.length - 1}
+            navIndex={currentIndex}
+            navTotal={entries.length}
+            navItems={navItems}
+            onNavSelect={onNavSelect}
+          />
         </div>
-        <p className="text-amber-300 text-xl font-semibold">{entry.momentTitle || 'Pause'}</p>
+        <div className="flex flex-col items-center justify-center py-16 gap-3">
+          <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center">
+            <span className="text-2xl">⏸</span>
+          </div>
+          <p className="text-amber-300 text-xl font-semibold">{entry.momentTitle || 'Pause'}</p>
+        </div>
       </div>
     )
   }
@@ -127,7 +155,7 @@ function CurrentSongView({
           hasNext={currentIndex < entries.length - 1}
           navIndex={currentIndex}
           navTotal={entries.length}
-          navItems={entries.map((e) => songMap.get(e.songId)?.title ?? '–')}
+          navItems={entries.map((e) => e.momentTitle !== undefined ? (e.momentTitle || 'Pause') : (songMap.get(e.songId)?.title ?? '–'))}
           onNavSelect={onNavSelect}
         />
       </div>

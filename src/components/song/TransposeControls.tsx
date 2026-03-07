@@ -1,6 +1,17 @@
-import { Minus, Plus } from 'lucide-react'
+import { Minus, Plus, Type } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
 import { transposeKey, keyUsesFlats } from '@/lib/chordpro/transpose'
 import { ALL_KEYS, NOTE_TO_INDEX } from '@/lib/chordpro/constants'
+import type { ChordFormat, ChordColor } from './ChordFormatContext'
+
+const COLOR_OPTIONS: { value: ChordColor; label: string; cls: string }[] = [
+  { value: 'default', label: 'Standard', cls: 'bg-white' },
+  { value: 'red',     label: 'Rot',      cls: 'bg-red-400' },
+  { value: 'blue',    label: 'Blau',     cls: 'bg-blue-400' },
+  { value: 'green',   label: 'Grün',     cls: 'bg-green-400' },
+  { value: 'cyan',    label: 'Cyan',     cls: 'bg-cyan-400' },
+  { value: 'purple',  label: 'Violett',  cls: 'bg-purple-400' },
+]
 
 interface TransposeControlsProps {
   originalKey: string | null
@@ -8,10 +19,12 @@ interface TransposeControlsProps {
   capo: number
   capoEnabled: boolean
   preferFlats: boolean
+  chordFormat: ChordFormat
   onTransposeChange: (semitones: number) => void
   onCapoChange: (capo: number) => void
   onCapoEnabledChange: (enabled: boolean) => void
   onPreferFlatsChange: (preferFlats: boolean) => void
+  onChordFormatChange: (format: ChordFormat) => void
 }
 
 export default function TransposeControls({
@@ -20,11 +33,26 @@ export default function TransposeControls({
   capo,
   capoEnabled,
   preferFlats,
+  chordFormat,
   onTransposeChange,
   onCapoChange,
   onCapoEnabledChange,
   onPreferFlatsChange,
+  onChordFormatChange,
 }: TransposeControlsProps) {
+  const [formatOpen, setFormatOpen] = useState(false)
+  const formatRef = useRef<HTMLDivElement>(null)
+
+  // Close overlay on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (formatRef.current && !formatRef.current.contains(e.target as Node)) {
+        setFormatOpen(false)
+      }
+    }
+    if (formatOpen) document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [formatOpen])
   // Effective capo: only applied when enabled
   const effectiveCapo = capoEnabled ? capo : 0
 
@@ -122,6 +150,59 @@ export default function TransposeControls({
       </div>
 
 
+      {/* Chord Format */}
+      <div className="relative ml-auto" ref={formatRef}>
+        <button
+          onClick={() => setFormatOpen((o) => !o)}
+          className={`flex items-center gap-1.5 px-2 py-1 rounded text-xs uppercase tracking-wider transition-colors ${
+            formatOpen ? 'bg-slate-600 text-white' : 'text-gray-400 hover:text-white hover:bg-slate-700'
+          }`}
+        >
+          <Type size={14} />
+          Chord Format
+        </button>
+
+        {formatOpen && (
+          <div className="absolute right-0 top-full mt-2 z-50 bg-slate-800 border border-slate-600 rounded-xl shadow-xl p-4 w-56">
+            {/* Bold / Italic */}
+            <div className="flex gap-2 mb-4">
+              <button
+                onClick={() => onChordFormatChange({ ...chordFormat, bold: !chordFormat.bold })}
+                className={`flex-1 py-1.5 rounded text-sm font-bold transition-colors ${
+                  chordFormat.bold ? 'bg-slate-500 text-white' : 'bg-slate-700 text-gray-400 hover:text-white'
+                }`}
+              >
+                B
+              </button>
+              <button
+                onClick={() => onChordFormatChange({ ...chordFormat, italic: !chordFormat.italic })}
+                className={`flex-1 py-1.5 rounded text-sm italic transition-colors ${
+                  chordFormat.italic ? 'bg-slate-500 text-white' : 'bg-slate-700 text-gray-400 hover:text-white'
+                }`}
+              >
+                I
+              </button>
+            </div>
+
+            {/* Color */}
+            <div className="text-xs text-gray-400 uppercase tracking-wider mb-2">Farbe</div>
+            <div className="grid grid-cols-3 gap-2">
+              {COLOR_OPTIONS.map(({ value, label, cls }) => (
+                <button
+                  key={value}
+                  onClick={() => onChordFormatChange({ ...chordFormat, color: value })}
+                  className={`flex flex-col items-center gap-1 py-1.5 px-1 rounded transition-colors ${
+                    chordFormat.color === value ? 'bg-slate-600 ring-1 ring-white/30' : 'hover:bg-slate-700'
+                  }`}
+                >
+                  <span className={`w-4 h-4 rounded-full ${cls}`} />
+                  <span className="text-xs text-gray-300">{label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

@@ -4,6 +4,7 @@ import { ArrowLeft, Edit, Trash2 } from 'lucide-react'
 import { getSong, deleteSong } from '@/lib/server/songs'
 import { parseChordPro } from '@/lib/chordpro/parser'
 import { keyUsesFlats } from '@/lib/chordpro/transpose'
+import { defaultChordFormat, type ChordFormat } from '@/components/song/ChordFormatContext'
 import SongRenderer from '@/components/song/SongRenderer'
 import TransposeControls from '@/components/song/TransposeControls'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
@@ -25,6 +26,7 @@ function SongViewPage() {
   const [capo, setCapo] = useState(song.capo)
   const [capoEnabled, setCapoEnabled] = useState(song.capo > 0)
   const [preferFlats, setPreferFlats] = useState(() => keyUsesFlats(song.key))
+  const [chordFormat, setChordFormat] = useState<ChordFormat>(defaultChordFormat)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
   const parsedSong = useMemo(() => parseChordPro(song.content), [song.content])
@@ -95,10 +97,12 @@ function SongViewPage() {
             capo={capo}
             capoEnabled={capoEnabled}
             preferFlats={preferFlats}
+            chordFormat={chordFormat}
             onTransposeChange={setTransposeSemitones}
             onCapoChange={setCapo}
             onCapoEnabledChange={setCapoEnabled}
             onPreferFlatsChange={setPreferFlats}
+            onChordFormatChange={setChordFormat}
           />
         </div>
 
@@ -108,6 +112,7 @@ function SongViewPage() {
             parsedSong={parsedSong}
             transposeSemitones={transposeSemitones - (capoEnabled ? capo : 0)}
             preferFlats={preferFlats}
+            chordFormat={chordFormat}
           />
         </div>
       </div>

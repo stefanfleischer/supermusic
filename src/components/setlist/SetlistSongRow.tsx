@@ -74,6 +74,7 @@ export default function SetlistSongRow({
             type="text"
             value={entry.momentTitle}
             onChange={(e) => onUpdate({ momentTitle: e.target.value })}
+            onMouseDown={(e) => e.stopPropagation()}
             placeholder="Moment title…"
             className="min-w-0 flex-1 bg-transparent text-amber-300 text-sm font-medium placeholder-amber-700 focus:outline-none"
           />

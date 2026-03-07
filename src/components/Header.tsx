@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { useState } from 'react'
-import { Home, Menu, X, Music, ListMusic } from 'lucide-react'
+import { Home, Menu, X, Music, ListMusic, BookOpen } from 'lucide-react'
 
 const navItems: Array<{
   to: string
@@ -16,6 +16,7 @@ const navItems: Array<{
     search: { q: '', key: '', artist: '', tag: '', book: '', sort: 'title' },
   },
   { to: '/setlists', label: 'Setlists', icon: ListMusic },
+  { to: '/books', label: 'Books', icon: BookOpen },
 ]
 
 export default function Header() {

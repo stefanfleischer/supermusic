@@ -24,9 +24,9 @@ export default function TransposeControls({
   // Effective capo: only applied when enabled
   const effectiveCapo = capoEnabled ? capo : 0
 
-  // The key shown = original key + transpose - effectiveCapo (shapes the player actually frets)
+  // Key display is independent of capo — always shows originalKey + transposeSemitones
   const currentKey = originalKey
-    ? transposeKey(originalKey, transposeSemitones - effectiveCapo, keyUsesFlats(originalKey))
+    ? transposeKey(originalKey, transposeSemitones, keyUsesFlats(originalKey))
     : null
 
   function handleKeySelect(newKey: string) {
@@ -36,8 +36,7 @@ export default function TransposeControls({
     const diff = ((newIndex - originalIndex) % 12 + 12) % 12
     // Prefer the shorter path (e.g. -1 instead of +11)
     const rawSemitones = diff > 6 ? diff - 12 : diff
-    // Add effectiveCapo back so that displayed key = original + (transposeSemitones - effectiveCapo)
-    onTransposeChange(rawSemitones + effectiveCapo)
+    onTransposeChange(rawSemitones)
   }
 
   return (

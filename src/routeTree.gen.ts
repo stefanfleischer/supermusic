@@ -21,7 +21,7 @@ import { Route as BooksNewRouteImport } from './routes/books/new'
 import { Route as BooksBookIdRouteImport } from './routes/books/$bookId'
 import { Route as SongsSongIdEditRouteImport } from './routes/songs/$songId_.edit'
 import { Route as SetlistsSetlistIdEditRouteImport } from './routes/setlists/$setlistId.edit'
-import { Route as BooksBookIdEditRouteImport } from './routes/books/$bookId.edit'
+import { Route as BooksBookIdEditRouteImport } from './routes/books/$bookId_.edit'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -84,14 +84,14 @@ const SetlistsSetlistIdEditRoute = SetlistsSetlistIdEditRouteImport.update({
   getParentRoute: () => SetlistsSetlistIdRoute,
 } as any)
 const BooksBookIdEditRoute = BooksBookIdEditRouteImport.update({
-  id: '/edit',
-  path: '/edit',
-  getParentRoute: () => BooksBookIdRoute,
+  id: '/books/$bookId_/edit',
+  path: '/books/$bookId/edit',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/books/$bookId': typeof BooksBookIdRouteWithChildren
+  '/books/$bookId': typeof BooksBookIdRoute
   '/books/new': typeof BooksNewRoute
   '/setlists/$setlistId': typeof SetlistsSetlistIdRouteWithChildren
   '/setlists/new': typeof SetlistsNewRoute
@@ -106,7 +106,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/books/$bookId': typeof BooksBookIdRouteWithChildren
+  '/books/$bookId': typeof BooksBookIdRoute
   '/books/new': typeof BooksNewRoute
   '/setlists/$setlistId': typeof SetlistsSetlistIdRouteWithChildren
   '/setlists/new': typeof SetlistsNewRoute
@@ -122,7 +122,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/books/$bookId': typeof BooksBookIdRouteWithChildren
+  '/books/$bookId': typeof BooksBookIdRoute
   '/books/new': typeof BooksNewRoute
   '/setlists/$setlistId': typeof SetlistsSetlistIdRouteWithChildren
   '/setlists/new': typeof SetlistsNewRoute
@@ -131,7 +131,7 @@ export interface FileRoutesById {
   '/books/': typeof BooksIndexRoute
   '/setlists/': typeof SetlistsIndexRoute
   '/songs/': typeof SongsIndexRoute
-  '/books/$bookId/edit': typeof BooksBookIdEditRoute
+  '/books/$bookId_/edit': typeof BooksBookIdEditRoute
   '/setlists/$setlistId/edit': typeof SetlistsSetlistIdEditRoute
   '/songs/$songId_/edit': typeof SongsSongIdEditRoute
 }
@@ -178,14 +178,14 @@ export interface FileRouteTypes {
     | '/books/'
     | '/setlists/'
     | '/songs/'
-    | '/books/$bookId/edit'
+    | '/books/$bookId_/edit'
     | '/setlists/$setlistId/edit'
     | '/songs/$songId_/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  BooksBookIdRoute: typeof BooksBookIdRouteWithChildren
+  BooksBookIdRoute: typeof BooksBookIdRoute
   BooksNewRoute: typeof BooksNewRoute
   SetlistsSetlistIdRoute: typeof SetlistsSetlistIdRouteWithChildren
   SetlistsNewRoute: typeof SetlistsNewRoute
@@ -194,6 +194,7 @@ export interface RootRouteChildren {
   BooksIndexRoute: typeof BooksIndexRoute
   SetlistsIndexRoute: typeof SetlistsIndexRoute
   SongsIndexRoute: typeof SongsIndexRoute
+  BooksBookIdEditRoute: typeof BooksBookIdEditRoute
   SongsSongIdEditRoute: typeof SongsSongIdEditRoute
 }
 
@@ -283,27 +284,15 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SetlistsSetlistIdEditRouteImport
       parentRoute: typeof SetlistsSetlistIdRoute
     }
-    '/books/$bookId/edit': {
-      id: '/books/$bookId/edit'
-      path: '/edit'
+    '/books/$bookId_/edit': {
+      id: '/books/$bookId_/edit'
+      path: '/books/$bookId/edit'
       fullPath: '/books/$bookId/edit'
       preLoaderRoute: typeof BooksBookIdEditRouteImport
-      parentRoute: typeof BooksBookIdRoute
+      parentRoute: typeof rootRouteImport
     }
   }
 }
-
-interface BooksBookIdRouteChildren {
-  BooksBookIdEditRoute: typeof BooksBookIdEditRoute
-}
-
-const BooksBookIdRouteChildren: BooksBookIdRouteChildren = {
-  BooksBookIdEditRoute: BooksBookIdEditRoute,
-}
-
-const BooksBookIdRouteWithChildren = BooksBookIdRoute._addFileChildren(
-  BooksBookIdRouteChildren,
-)
 
 interface SetlistsSetlistIdRouteChildren {
   SetlistsSetlistIdEditRoute: typeof SetlistsSetlistIdEditRoute
@@ -318,7 +307,7 @@ const SetlistsSetlistIdRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  BooksBookIdRoute: BooksBookIdRouteWithChildren,
+  BooksBookIdRoute: BooksBookIdRoute,
   BooksNewRoute: BooksNewRoute,
   SetlistsSetlistIdRoute: SetlistsSetlistIdRouteWithChildren,
   SetlistsNewRoute: SetlistsNewRoute,
@@ -327,6 +316,7 @@ const rootRouteChildren: RootRouteChildren = {
   BooksIndexRoute: BooksIndexRoute,
   SetlistsIndexRoute: SetlistsIndexRoute,
   SongsIndexRoute: SongsIndexRoute,
+  BooksBookIdEditRoute: BooksBookIdEditRoute,
   SongsSongIdEditRoute: SongsSongIdEditRoute,
 }
 export const routeTree = rootRouteImport

@@ -5,7 +5,7 @@ import { getBook, updateBook } from '@/lib/server/books'
 import { getSongs } from '@/lib/server/songs'
 import BookEditor from '@/components/book/BookEditor'
 
-export const Route = createFileRoute('/books/$bookId/edit')({
+export const Route = createFileRoute('/books/$bookId_/edit')({
   loader: async ({ params }) => {
     const [book, songs] = await Promise.all([
       getBook({ data: { id: params.bookId } }),

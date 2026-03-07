@@ -96,6 +96,8 @@ function CurrentSongView({
           onNext={onNext}
           hasPrev={currentIndex > 0}
           hasNext={currentIndex < entries.length - 1}
+          navIndex={currentIndex}
+          navTotal={entries.length}
         />
       </div>
 

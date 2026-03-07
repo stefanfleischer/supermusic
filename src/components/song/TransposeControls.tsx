@@ -30,6 +30,8 @@ interface TransposeControlsProps {
   onNext?: () => void
   hasPrev?: boolean
   hasNext?: boolean
+  navIndex?: number   // 0-based current index
+  navTotal?: number   // total entries
 }
 
 export default function TransposeControls({
@@ -48,6 +50,8 @@ export default function TransposeControls({
   onNext,
   hasPrev,
   hasNext,
+  navIndex,
+  navTotal,
 }: TransposeControlsProps) {
   const [formatOpen, setFormatOpen] = useState(false)
   const formatRef = useRef<HTMLDivElement>(null)
@@ -83,25 +87,6 @@ export default function TransposeControls({
 
   return (
     <div className="flex flex-wrap items-center gap-4 p-3 bg-slate-800/50 border border-slate-700 rounded-lg">
-      {/* Prev / Next navigation (setlist) */}
-      {(onPrev || onNext) && (
-        <div className="flex items-center gap-1">
-          <button
-            onClick={onPrev}
-            disabled={!hasPrev}
-            className="p-1 rounded text-gray-400 hover:text-white hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-          >
-            <ChevronLeft size={18} />
-          </button>
-          <button
-            onClick={onNext}
-            disabled={!hasNext}
-            className="p-1 rounded text-gray-400 hover:text-white hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-          >
-            <ChevronRight size={18} />
-          </button>
-        </div>
-      )}
       {/* Transpose: Key − [Key Dropdown] + */}
       <div className="flex items-center gap-1">
         <span className="text-xs text-gray-400 uppercase tracking-wider mr-1">
@@ -177,6 +162,31 @@ export default function TransposeControls({
         </div>
       </div>
 
+
+      {/* Prev / Next navigation (setlist) */}
+      {(onPrev || onNext) && (
+        <div className="flex items-center gap-1">
+          <button
+            onClick={onPrev}
+            disabled={!hasPrev}
+            className="p-1 rounded text-gray-400 hover:text-white hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            <ChevronLeft size={18} />
+          </button>
+          {navTotal !== undefined && navIndex !== undefined && (
+            <span className="text-gray-500 text-sm font-mono px-1">
+              {navIndex + 1}/{navTotal}
+            </span>
+          )}
+          <button
+            onClick={onNext}
+            disabled={!hasNext}
+            className="p-1 rounded text-gray-400 hover:text-white hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            <ChevronRight size={18} />
+          </button>
+        </div>
+      )}
 
       {/* Chord Format */}
       <div className="relative ml-auto" ref={formatRef}>

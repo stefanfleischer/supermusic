@@ -10,6 +10,7 @@ import type { SongMetadata } from '@/components/song/SongMetadataForm'
 export const Route = createFileRoute('/songs/$songId_/edit')({
   validateSearch: (search: Record<string, unknown>) => ({
     setlistId: (search.setlistId as string) || '',
+    bookId: (search.bookId as string) || '',
   }),
   loader: async ({ params }) => {
     const song = await getSong({ data: { id: params.songId } })
@@ -21,12 +22,14 @@ export const Route = createFileRoute('/songs/$songId_/edit')({
 
 function EditSongPage() {
   const { song } = Route.useLoaderData()
-  const { setlistId } = Route.useSearch()
+  const { setlistId, bookId } = Route.useSearch()
   const navigate = useNavigate()
 
   const backTo = setlistId
-    ? { to: '/setlists/$setlistId' as '/', params: { setlistId } as any }
-    : { to: '/songs/$songId' as '/', params: { songId: song.id } as any }
+    ? { to: '/setlists/$setlistId' as '/', params: { setlistId } as any, search: undefined }
+    : bookId
+      ? { to: '/songs/$songId' as '/', params: { songId: song.id } as any, search: { bookId } as any }
+      : { to: '/songs/$songId' as '/', params: { songId: song.id } as any, search: undefined }
   const [saving, setSaving] = useState(false)
 
   const [metadata, setMetadata] = useState<SongMetadata>({

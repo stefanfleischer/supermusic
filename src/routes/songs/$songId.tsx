@@ -12,6 +12,9 @@ import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import Badge from '@/components/ui/Badge'
 
 export const Route = createFileRoute('/songs/$songId')({
+  validateSearch: (search: Record<string, unknown>) => ({
+    bookId: (search.bookId as string) || '',
+  }),
   loader: async ({ params }) => {
     const song = await getSong({ data: { id: params.songId } })
     if (!song) throw new Error('Song not found')
@@ -22,7 +25,12 @@ export const Route = createFileRoute('/songs/$songId')({
 
 function SongViewPage() {
   const { song } = Route.useLoaderData()
+  const { bookId } = Route.useSearch()
   const navigate = useNavigate()
+
+  const backLink = bookId
+    ? { to: '/books/$bookId' as '/', params: { bookId } as any, search: undefined }
+    : { to: '/songs' as '/', params: {} as any, search: { q: '', key: '', artist: '', tag: '', sort: 'title' } }
   const {
     transposeSemitones, setTransposeSemitones,
     capo, setCapo,
@@ -58,8 +66,9 @@ function SongViewPage() {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <Link
-              to="/songs"
-              search={{ q: '', key: '', artist: '', tag: '', sort: 'title' }}
+              to={backLink.to}
+              params={backLink.params}
+              search={backLink.search as any}
               className="p-2 rounded-lg hover:bg-slate-700 text-gray-400 hover:text-white transition-colors"
             >
               <ArrowLeft size={20} />
@@ -77,6 +86,7 @@ function SongViewPage() {
             <Link
               to="/songs/$songId/edit"
               params={{ songId: song.id }}
+              search={bookId ? { bookId } as any : undefined}
               className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-300 hover:bg-slate-700 transition-colors"
             >
               <Edit size={16} />

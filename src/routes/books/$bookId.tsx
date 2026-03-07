@@ -88,6 +88,7 @@ function BookViewPage() {
                 <Link
                   to="/songs/$songId"
                   params={{ songId: song.id }}
+                  search={{ bookId: book.id } as any}
                   className="min-w-0 flex-1"
                 >
                   <span className="text-white text-sm">{song.title}</span>

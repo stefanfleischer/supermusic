@@ -27,19 +27,12 @@ export default function TransposeControls({
     <div className="flex flex-wrap items-center gap-4 p-3 bg-slate-800/50 border border-slate-700 rounded-lg">
       {/* Transpose */}
       <div className="flex items-center gap-2">
-        <span className="text-xs text-gray-400 uppercase tracking-wider">
-          Transpose
-        </span>
         <button
           onClick={() => onTransposeChange(transposeSemitones - 1)}
           className="p-1 rounded hover:bg-slate-700 text-gray-400 hover:text-white transition-colors"
         >
           <Minus size={16} />
         </button>
-        <span className="text-white font-mono text-sm min-w-[2ch] text-center">
-          {transposeSemitones > 0 ? '+' : ''}
-          {transposeSemitones}
-        </span>
         <button
           onClick={() => onTransposeChange(transposeSemitones + 1)}
           className="p-1 rounded hover:bg-slate-700 text-gray-400 hover:text-white transition-colors"

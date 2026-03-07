@@ -21,7 +21,7 @@ export default function SongSection({ section }: SongSectionProps) {
     >
       {section.label && (
         <div
-          className={`text-xs font-semibold uppercase tracking-wider mb-2 ${
+          className={`text-xs uppercase tracking-wider mb-2 ${
             isChorus
               ? 'text-cyan-400'
               : isBridge

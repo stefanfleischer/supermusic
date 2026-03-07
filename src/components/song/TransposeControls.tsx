@@ -163,8 +163,9 @@ export default function TransposeControls({
       </div>
 
 
-      {/* Prev / Next navigation (setlist) */}
+      {/* Prev / Next navigation (setlist) — centered between Capo and Chord Format */}
       {(onPrev || onNext) && (
+        <div className="flex-1 flex justify-center">
         <div className="flex items-center gap-1">
           <button
             onClick={onPrev}
@@ -185,6 +186,7 @@ export default function TransposeControls({
           >
             <ChevronRight size={18} />
           </button>
+        </div>
         </div>
       )}
 

@@ -6,7 +6,7 @@ import SongEditor from '@/components/song/SongEditor'
 import SongMetadataForm from '@/components/song/SongMetadataForm'
 import type { SongMetadata } from '@/components/song/SongMetadataForm'
 
-export const Route = createFileRoute('/songs/$songId/edit')({
+export const Route = createFileRoute('/songs/$songId_/edit')({
   loader: async ({ params }) => {
     const song = await getSong({ data: { id: params.songId } })
     if (!song) throw new Error('Song not found')

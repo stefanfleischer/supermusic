@@ -2,7 +2,8 @@ import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useMemo } from 'react'
 import { Music, Plus } from 'lucide-react'
 import { getSongs } from '@/lib/server/songs'
-import type { Song } from '@/lib/types'
+import { getSetlists, updateSetlist } from '@/lib/server/setlists'
+import type { Song, Setlist } from '@/lib/types'
 import SongList from '@/components/library/SongList'
 import SearchBar from '@/components/library/SearchBar'
 import FilterPanel from '@/components/library/FilterPanel'
@@ -18,8 +19,8 @@ export const Route = createFileRoute('/songs/')({
     sort: (search.sort as string) || 'title',
   }),
   loader: async () => {
-    const songs = await getSongs()
-    return { songs }
+    const [songs, setlists] = await Promise.all([getSongs(), getSetlists()])
+    return { songs, setlists }
   },
   component: SongsPage,
 })
@@ -77,7 +78,7 @@ function filterAndSortSongs(
 }
 
 function SongsPage() {
-  const { songs } = Route.useLoaderData()
+  const { songs, setlists } = Route.useLoaderData()
   const { q, key, artist, tag, book, sort } = Route.useSearch()
   const navigate = useNavigate()
 
@@ -165,7 +166,7 @@ function SongsPage() {
             </p>
           </div>
         ) : (
-          <SongList songs={filteredSongs} />
+          <SongList songs={filteredSongs} setlists={setlists} />
         )}
       </div>
     </div>

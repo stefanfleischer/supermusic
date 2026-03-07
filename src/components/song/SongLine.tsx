@@ -18,9 +18,17 @@ export default function SongLine({ line }: SongLineProps) {
       {line.segments.map((segment, i) => (
         <span key={i} className="inline-block align-bottom">
           {hasChords && (
-            <span className="block h-5 leading-5">
+            <span className="block h-5 leading-5 whitespace-pre">
               {segment.chord ? (
-                <ChordBadge chord={segment.chord} />
+                <>
+                  <ChordBadge chord={segment.chord} />
+                  {/* invisible spacer so column width = chord + trailing spaces */}
+                  {!segment.lyrics?.trim() && (
+                    <span className="opacity-0 select-none text-sm">
+                      {segment.lyrics || '  '}
+                    </span>
+                  )}
+                </>
               ) : (
                 <span className="text-sm">&nbsp;</span>
               )}

@@ -76,7 +76,7 @@ function SongViewPage() {
 
         {/* Song metadata badges */}
         <div className="flex flex-wrap gap-2 mb-4">
-          {song.key && <Badge variant="cyan">Key: {song.key}</Badge>}
+          {song.key && <Badge variant="cyan">Original Key: {song.key}</Badge>}
           {song.tempo && <Badge variant="outline">{song.tempo} BPM</Badge>}
           {song.timeSignature && (
             <Badge variant="outline">{song.timeSignature}</Badge>

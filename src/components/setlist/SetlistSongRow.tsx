@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { GripVertical, X, Minus, Plus, Clock } from 'lucide-react'
 import type { Song, SetlistEntry } from '@/lib/types'
 import { transposeKey, keyUsesFlats } from '@/lib/chordpro/transpose'
@@ -31,6 +32,7 @@ export default function SetlistSongRow({
   onDragEnd,
 }: SetlistSongRowProps) {
   const isMoment = entry.momentTitle !== undefined
+  const gripRef = useRef<HTMLDivElement>(null)
 
   if (!isMoment && !song) return null
 
@@ -51,7 +53,7 @@ export default function SetlistSongRow({
     <div
       draggable
       onDragStart={(e) => {
-        if ((e.target as HTMLElement).tagName === 'INPUT') {
+        if (!gripRef.current?.contains(e.target as Node)) {
           e.preventDefault()
           return
         }
@@ -63,7 +65,7 @@ export default function SetlistSongRow({
       className={`flex items-center gap-2 p-3 border rounded-lg transition-all ${dragClass}`}
     >
       {/* Drag handle */}
-      <div className="cursor-grab active:cursor-grabbing text-gray-500 hover:text-gray-300 shrink-0 touch-none">
+      <div ref={gripRef} className="cursor-grab active:cursor-grabbing text-gray-500 hover:text-gray-300 shrink-0 touch-none">
         <GripVertical size={18} />
       </div>
 
@@ -80,8 +82,7 @@ export default function SetlistSongRow({
             type="text"
             value={entry.momentTitle}
             onChange={(e) => onUpdate({ momentTitle: e.target.value })}
-            onMouseDown={(e) => e.stopPropagation()}
-            onDragStart={(e) => e.preventDefault()}
+
             placeholder="Moment title…"
             className="min-w-0 flex-1 bg-transparent text-amber-300 text-sm font-medium placeholder-amber-700 focus:outline-none"
           />

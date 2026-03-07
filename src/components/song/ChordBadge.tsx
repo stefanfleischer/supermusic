@@ -4,7 +4,7 @@ interface ChordBadgeProps {
 
 export default function ChordBadge({ chord }: ChordBadgeProps) {
   return (
-    <span className="text-cyan-400 text-sm font-mono font-bold whitespace-pre">
+    <span className="text-white text-sm whitespace-pre">
       {chord}
     </span>
   )

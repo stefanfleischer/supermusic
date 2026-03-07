@@ -90,16 +90,16 @@ export default function TransposeControls({
         >
           Capo
         </button>
-        <div className={`flex items-center gap-1 transition-opacity ${capoEnabled ? 'opacity-100' : 'opacity-30 pointer-events-none'}`}>
+        <div className={`flex items-center gap-1 transition-opacity ${capoEnabled ? 'opacity-100' : 'opacity-40'}`}>
           <button
-            onClick={() => onCapoChange(Math.max(0, capo - 1))}
+            onClick={() => { onCapoEnabledChange(true); onCapoChange(Math.max(0, capo - 1)) }}
             className="p-1 rounded hover:bg-slate-700 text-gray-400 hover:text-white transition-colors"
           >
             <Minus size={16} />
           </button>
           <select
             value={capo}
-            onChange={(e) => onCapoChange(Number(e.target.value))}
+            onChange={(e) => { onCapoEnabledChange(true); onCapoChange(Number(e.target.value)) }}
             className="bg-slate-700 border border-slate-600 text-white text-sm rounded px-2 py-1 focus:outline-none focus:border-cyan-500"
           >
             {Array.from({ length: 13 }, (_, i) => (
@@ -109,7 +109,7 @@ export default function TransposeControls({
             ))}
           </select>
           <button
-            onClick={() => onCapoChange(Math.min(12, capo + 1))}
+            onClick={() => { onCapoEnabledChange(true); onCapoChange(Math.min(12, capo + 1)) }}
             className="p-1 rounded hover:bg-slate-700 text-gray-400 hover:text-white transition-colors"
           >
             <Plus size={16} />

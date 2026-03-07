@@ -89,7 +89,7 @@ export default function TransposeControls({
         >
           {Array.from({ length: 13 }, (_, i) => (
             <option key={i} value={i}>
-              {i === 0 ? 'None' : i}
+              {i}
             </option>
           ))}
         </select>

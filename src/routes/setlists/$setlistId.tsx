@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useState, useMemo } from 'react'
-import { ArrowLeft, Edit, Trash2, X } from 'lucide-react'
+import { ArrowLeft, Edit, Trash2, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { getSetlist, deleteSetlist, updateSetlist } from '@/lib/server/setlists'
 import { getSongs } from '@/lib/server/songs'
 import { parseChordPro } from '@/lib/chordpro/parser'
@@ -41,6 +41,7 @@ function CurrentSongView({
     capoEnabled, setCapoEnabled,
     preferFlats, setPreferFlats,
   } = useSongSettings(song?.id ?? '', song?.key ?? null, song?.capo ?? 0)
+  const [navOpen, setNavOpen] = useState(false)
   const [chordFormat, setChordFormat] = useState<ChordFormat>(() => {
     try {
       const stored = localStorage.getItem('chordFormat')
@@ -55,41 +56,65 @@ function CurrentSongView({
 
   const parsed = useMemo(() => song ? parseChordPro(song.content) : null, [song])
 
-  // Moment: show title + nav controls, no song content
+  // Moment view
   if (entry.momentTitle !== undefined) {
     const navItems = entries.map((e) =>
       e.momentTitle !== undefined ? (e.momentTitle || 'Pause') : (songMap.get(e.songId)?.title ?? '–')
     )
     return (
       <div>
-        <div className="mb-6">
-          <TransposeControls
-            originalKey={null}
-            transposeSemitones={0}
-            capo={0}
-            capoEnabled={false}
-            preferFlats={false}
-            chordFormat={chordFormat}
-            onTransposeChange={() => {}}
-            onCapoChange={() => {}}
-            onCapoEnabledChange={() => {}}
-            onPreferFlatsChange={() => {}}
-            onChordFormatChange={handleChordFormatChange}
-            onPrev={onPrev}
-            onNext={onNext}
-            hasPrev={currentIndex > 0}
-            hasNext={currentIndex < entries.length - 1}
-            navIndex={currentIndex}
-            navTotal={entries.length}
-            navItems={navItems}
-            onNavSelect={onNavSelect}
-          />
+        {/* Title (like song header) */}
+        <div className="mb-4">
+          <h2 className="text-2xl font-bold text-white">{entry.momentTitle || 'Pause'}</h2>
         </div>
+
+        {/* Nav-only bar */}
+        <div className="flex items-center justify-center gap-2 p-3 bg-slate-800/50 border border-slate-700 rounded-lg mb-6">
+          <button
+            onClick={onPrev}
+            disabled={currentIndex === 0}
+            className="p-1 rounded text-gray-400 hover:text-white hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            <ChevronLeft size={18} />
+          </button>
+          <div className="relative">
+            <button
+              onClick={() => setNavOpen((o) => !o)}
+              className="text-gray-400 hover:text-white text-sm font-mono px-2 py-0.5 rounded hover:bg-slate-700 transition-colors"
+            >
+              {currentIndex + 1}/{entries.length}
+            </button>
+            {navOpen && (
+              <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 z-50 bg-slate-800 border border-slate-600 rounded-xl shadow-xl py-1 min-w-48 max-h-64 overflow-y-auto">
+                {navItems.map((title, i) => (
+                  <button
+                    key={i}
+                    onClick={() => { onNavSelect(i); setNavOpen(false) }}
+                    className={`w-full text-left px-4 py-2 text-sm transition-colors flex items-center gap-2 ${
+                      i === currentIndex ? 'bg-cyan-600 text-white' : 'text-gray-300 hover:bg-slate-700 hover:text-white'
+                    }`}
+                  >
+                    <span className="text-gray-500 font-mono text-xs w-5 shrink-0">{i + 1}.</span>
+                    <span className="truncate">{title}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          <button
+            onClick={onNext}
+            disabled={currentIndex === entries.length - 1}
+            className="p-1 rounded text-gray-400 hover:text-white hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            <ChevronRight size={18} />
+          </button>
+        </div>
+
+        {/* Moment body */}
         <div className="flex flex-col items-center justify-center py-16 gap-3">
           <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center">
             <span className="text-2xl">⏸</span>
           </div>
-          <p className="text-amber-300 text-xl font-semibold">{entry.momentTitle || 'Pause'}</p>
         </div>
       </div>
     )

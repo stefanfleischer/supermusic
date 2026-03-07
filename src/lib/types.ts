@@ -12,6 +12,7 @@ export interface Song {
   tempo: number | null
   timeSignature: string | null
   tags: string[]
+  books: string[]
   ccli: string | null
   copyright: string | null
   content: string // raw ChordPro source text

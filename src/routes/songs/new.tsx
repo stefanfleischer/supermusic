@@ -24,6 +24,7 @@ function NewSongPage() {
     timeSignature: '',
     capo: 0,
     tags: '',
+    books: '',
     ccli: '',
     copyright: '',
   })
@@ -59,10 +60,8 @@ function NewSongPage() {
           tempo: metadata.tempo ? Number(metadata.tempo) : null,
           timeSignature: metadata.timeSignature || null,
           capo: metadata.capo,
-          tags: metadata.tags
-            .split(',')
-            .map((t) => t.trim())
-            .filter(Boolean),
+          tags: metadata.tags.split(',').map((t) => t.trim()).filter(Boolean),
+          books: metadata.books.split(',').map((b) => b.trim()).filter(Boolean),
           ccli: metadata.ccli || null,
           copyright: metadata.copyright || null,
           content,

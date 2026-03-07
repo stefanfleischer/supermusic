@@ -14,6 +14,7 @@ export const Route = createFileRoute('/songs/')({
     key: (search.key as string) || '',
     artist: (search.artist as string) || '',
     tag: (search.tag as string) || '',
+    book: (search.book as string) || '',
     sort: (search.sort as string) || 'title',
   }),
   loader: async () => {
@@ -29,6 +30,7 @@ function filterAndSortSongs(
   key: string,
   artist: string,
   tag: string,
+  book: string,
   sort: string,
 ): Song[] {
   let results = songs
@@ -56,6 +58,10 @@ function filterAndSortSongs(
     results = results.filter((song) => song.tags.includes(tag))
   }
 
+  if (book) {
+    results = results.filter((song) => song.books.includes(book))
+  }
+
   results.sort((a, b) => {
     switch (sort) {
       case 'artist':
@@ -72,18 +78,18 @@ function filterAndSortSongs(
 
 function SongsPage() {
   const { songs } = Route.useLoaderData()
-  const { q, key, artist, tag, sort } = Route.useSearch()
+  const { q, key, artist, tag, book, sort } = Route.useSearch()
   const navigate = useNavigate()
 
   const filteredSongs = useMemo(
-    () => filterAndSortSongs(songs, q, key, artist, tag, sort),
-    [songs, q, key, artist, tag, sort],
+    () => filterAndSortSongs(songs, q, key, artist, tag, book, sort),
+    [songs, q, key, artist, tag, book, sort],
   )
 
   function updateSearch(updates: Record<string, string>) {
     navigate({
       to: '/songs',
-      search: { q, key, artist, tag, sort, ...updates },
+      search: { q, key, artist, tag, book, sort, ...updates },
       replace: true,
     })
   }
@@ -121,13 +127,15 @@ function SongsPage() {
               selectedKey={key}
               selectedArtist={artist}
               selectedTag={tag}
+              selectedBook={book}
               sortBy={sort}
               onKeyChange={(value) => updateSearch({ key: value })}
               onArtistChange={(value) => updateSearch({ artist: value })}
               onTagChange={(value) => updateSearch({ tag: value })}
+              onBookChange={(value) => updateSearch({ book: value })}
               onSortChange={(value) => updateSearch({ sort: value })}
             />
-            {q || key || artist || tag ? (
+            {q || key || artist || tag || book ? (
               <p className="text-sm text-gray-500">
                 Showing {filteredSongs.length} of {songs.length} songs
               </p>

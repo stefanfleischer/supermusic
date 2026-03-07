@@ -29,6 +29,7 @@ function EditSongPage() {
     timeSignature: song.timeSignature || '',
     capo: song.capo,
     tags: song.tags.join(', '),
+    books: song.books.join(', '),
     ccli: song.ccli || '',
     copyright: song.copyright || '',
   })
@@ -65,10 +66,8 @@ function EditSongPage() {
           tempo: metadata.tempo ? Number(metadata.tempo) : null,
           timeSignature: metadata.timeSignature || null,
           capo: metadata.capo,
-          tags: metadata.tags
-            .split(',')
-            .map((t) => t.trim())
-            .filter(Boolean),
+          tags: metadata.tags.split(',').map((t) => t.trim()).filter(Boolean),
+          books: metadata.books.split(',').map((b) => b.trim()).filter(Boolean),
           ccli: metadata.ccli || null,
           copyright: metadata.copyright || null,
           content,

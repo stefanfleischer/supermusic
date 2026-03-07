@@ -8,6 +8,7 @@ interface SongMetadata {
   timeSignature: string
   capo: number
   tags: string
+  books: string
   ccli: string
   copyright: string
 }
@@ -108,6 +109,20 @@ export default function SongMetadataForm({
           value={metadata.tags}
           onChange={(e) => update('tags', e.target.value)}
           placeholder="worship, hymn, classic"
+          className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500"
+        />
+      </div>
+
+      {/* Books */}
+      <div>
+        <label className="block text-sm text-gray-400 mb-1">
+          Books (comma-separated)
+        </label>
+        <input
+          type="text"
+          value={metadata.books}
+          onChange={(e) => update('books', e.target.value)}
+          placeholder="Gotteslob, Eigene Sammlung"
           className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500"
         />
       </div>

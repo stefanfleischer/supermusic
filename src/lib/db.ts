@@ -20,6 +20,7 @@ type SongRow = {
   tempo: number | null
   time_signature: string | null
   tags: string[] | null
+  books: string[] | null
   ccli: string | null
   copyright: string | null
   content: string
@@ -37,6 +38,7 @@ function songFromRow(row: SongRow): Song {
     tempo: row.tempo,
     timeSignature: row.time_signature,
     tags: row.tags ?? [],
+    books: row.books ?? [],
     ccli: row.ccli,
     copyright: row.copyright,
     content: row.content,
@@ -55,6 +57,7 @@ function songToRow(song: Partial<Song>): Record<string, unknown> {
   if (song.tempo !== undefined) row.tempo = song.tempo
   if (song.timeSignature !== undefined) row.time_signature = song.timeSignature
   if (song.tags !== undefined) row.tags = song.tags
+  if (song.books !== undefined) row.books = song.books
   if (song.ccli !== undefined) row.ccli = song.ccli
   if (song.copyright !== undefined) row.copyright = song.copyright
   if (song.content !== undefined) row.content = song.content

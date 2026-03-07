@@ -20,11 +20,13 @@ function CurrentSongView({
   onPrev,
   onNext,
   onRemove,
+  setlistId,
   onNavSelect,
 }: {
   entries: SetlistEntry[]
   currentIndex: number
   songMap: Map<string, Song>
+  setlistId: string
   onPrev: () => void
   onNext: () => void
   onRemove: () => void
@@ -68,6 +70,7 @@ function CurrentSongView({
             <Link
               to="/songs/$songId/edit"
               params={{ songId: song.id }}
+              search={{ setlistId } as any}
               className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-300 hover:bg-slate-700 transition-colors text-sm"
             >
               <Edit size={16} />
@@ -221,6 +224,7 @@ function SetlistViewPage() {
             entries={entries}
             currentIndex={currentIndex}
             songMap={songMap}
+            setlistId={setlist.id}
             onPrev={() => setCurrentIndex((i) => Math.max(0, i - 1))}
             onNext={() => setCurrentIndex((i) => Math.min(entries.length - 1, i + 1))}
             onRemove={() => handleRemoveEntry(currentIndex)}

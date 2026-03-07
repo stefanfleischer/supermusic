@@ -8,6 +8,9 @@ import SongMetadataForm from '@/components/song/SongMetadataForm'
 import type { SongMetadata } from '@/components/song/SongMetadataForm'
 
 export const Route = createFileRoute('/songs/$songId_/edit')({
+  validateSearch: (search: Record<string, unknown>) => ({
+    setlistId: (search.setlistId as string) || '',
+  }),
   loader: async ({ params }) => {
     const song = await getSong({ data: { id: params.songId } })
     if (!song) throw new Error('Song not found')
@@ -18,7 +21,12 @@ export const Route = createFileRoute('/songs/$songId_/edit')({
 
 function EditSongPage() {
   const { song } = Route.useLoaderData()
+  const { setlistId } = Route.useSearch()
   const navigate = useNavigate()
+
+  const backTo = setlistId
+    ? { to: '/setlists/$setlistId' as '/', params: { setlistId } as any }
+    : { to: '/songs/$songId' as '/', params: { songId: song.id } as any }
   const [saving, setSaving] = useState(false)
 
   const [metadata, setMetadata] = useState<SongMetadata>({
@@ -73,7 +81,7 @@ function EditSongPage() {
           content,
         },
       })
-      navigate({ to: '/songs/$songId', params: { songId: song.id } })
+      navigate(backTo as any)
     } finally {
       setSaving(false)
     }
@@ -86,8 +94,8 @@ function EditSongPage() {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <Link
-              to="/songs/$songId"
-              params={{ songId: song.id }}
+              to={backTo.to}
+              params={backTo.params}
               className="p-2 rounded-lg hover:bg-slate-700 text-gray-400 hover:text-white transition-colors"
             >
               <ArrowLeft size={20} />

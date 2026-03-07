@@ -99,7 +99,7 @@ function SongViewPage() {
         <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
           <SongRenderer
             parsedSong={parsedSong}
-            transposeSemitones={transposeSemitones}
+            transposeSemitones={transposeSemitones - capo}
           />
         </div>
       </div>

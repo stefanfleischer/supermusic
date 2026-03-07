@@ -1,8 +1,6 @@
 import { Minus, Plus } from 'lucide-react'
-import { transposeKey, getCapoKey, keyUsesFlats } from '@/lib/chordpro/transpose'
-import { ALL_KEYS } from '@/lib/chordpro/constants'
-import { NOTE_TO_INDEX } from '@/lib/chordpro/constants'
-import Badge from '@/components/ui/Badge'
+import { transposeKey, keyUsesFlats } from '@/lib/chordpro/transpose'
+import { ALL_KEYS, NOTE_TO_INDEX } from '@/lib/chordpro/constants'
 
 interface TransposeControlsProps {
   originalKey: string | null
@@ -19,11 +17,10 @@ export default function TransposeControls({
   onTransposeChange,
   onCapoChange,
 }: TransposeControlsProps) {
+  // The key shown = original key + transpose - capo (i.e. the shapes the player actually frets)
   const currentKey = originalKey
-    ? transposeKey(originalKey, transposeSemitones, keyUsesFlats(originalKey))
+    ? transposeKey(originalKey, transposeSemitones - capo, keyUsesFlats(originalKey))
     : null
-
-  const capoKey = currentKey && capo > 0 ? getCapoKey(currentKey, capo) : null
 
   function handleKeySelect(newKey: string) {
     if (!originalKey) return
@@ -31,8 +28,9 @@ export default function TransposeControls({
     const newIndex = NOTE_TO_INDEX[newKey] ?? 0
     const diff = ((newIndex - originalIndex) % 12 + 12) % 12
     // Prefer the shorter path (e.g. -1 instead of +11)
-    const semitones = diff > 6 ? diff - 12 : diff
-    onTransposeChange(semitones)
+    const rawSemitones = diff > 6 ? diff - 12 : diff
+    // Add capo back so that displayed key = original + (transposeSemitones - capo)
+    onTransposeChange(rawSemitones + capo)
   }
 
   return (
@@ -101,15 +99,7 @@ export default function TransposeControls({
         </button>
       </div>
 
-      {/* Capo key */}
-      {capoKey && (
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-400 uppercase tracking-wider">
-            Play
-          </span>
-          <Badge variant="outline">{capoKey}</Badge>
-        </div>
-      )}
+
     </div>
   )
 }

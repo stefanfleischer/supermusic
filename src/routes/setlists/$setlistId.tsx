@@ -64,13 +64,23 @@ function CurrentSongView({
             <h2 className="text-2xl font-bold text-white">{song.title}</h2>
             {song.artist && <p className="text-gray-400">{song.artist}</p>}
           </div>
-          <button
-            onClick={onRemove}
-            className="p-2 rounded-lg text-gray-500 hover:text-red-400 hover:bg-red-400/10 transition-colors"
-            title="Aus Setlist entfernen"
-          >
-            <X size={18} />
-          </button>
+          <div className="flex items-center gap-2">
+            <Link
+              to="/songs/$songId/edit"
+              params={{ songId: song.id }}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-300 hover:bg-slate-700 transition-colors text-sm"
+            >
+              <Edit size={16} />
+              Edit Song
+            </Link>
+            <button
+              onClick={onRemove}
+              className="p-2 rounded-lg text-gray-500 hover:text-red-400 hover:bg-red-400/10 transition-colors"
+              title="Aus Setlist entfernen"
+            >
+              <X size={18} />
+            </button>
+          </div>
         </div>
 
         {/* Metadata badges */}

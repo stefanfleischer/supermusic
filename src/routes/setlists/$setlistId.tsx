@@ -20,6 +20,7 @@ function CurrentSongView({
   onPrev,
   onNext,
   onRemove,
+  onNavSelect,
 }: {
   entries: SetlistEntry[]
   currentIndex: number

@@ -75,20 +75,16 @@ export const FLAT_KEYS = new Set([
 // All 12 major key names for UI dropdowns
 export const ALL_KEYS = [
   'C',
-  'C#',
   'Db',
   'D',
-  'D#',
   'Eb',
   'E',
   'F',
   'F#',
   'Gb',
   'G',
-  'G#',
   'Ab',
   'A',
-  'A#',
   'Bb',
   'B',
 ]

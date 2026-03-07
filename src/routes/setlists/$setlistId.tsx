@@ -4,7 +4,7 @@ import { ArrowLeft, Edit, Trash2, X } from 'lucide-react'
 import { getSetlist, deleteSetlist, updateSetlist } from '@/lib/server/setlists'
 import { getSongs } from '@/lib/server/songs'
 import { parseChordPro } from '@/lib/chordpro/parser'
-import { keyUsesFlats } from '@/lib/chordpro/transpose'
+import { useSongSettings } from '@/lib/useSongSettings'
 import SongRenderer from '@/components/song/SongRenderer'
 import TransposeControls from '@/components/song/TransposeControls'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
@@ -33,10 +33,12 @@ function CurrentSongView({
   const entry = entries[currentIndex]
   const song = songMap.get(entry.songId)
 
-  const [transposeSemitones, setTransposeSemitones] = useState(entry.transposeSemitones)
-  const [capo, setCapo] = useState(song?.capo ?? 0)
-  const [capoEnabled, setCapoEnabled] = useState((song?.capo ?? 0) > 0)
-  const [preferFlats, setPreferFlats] = useState(() => keyUsesFlats(song?.key ?? null))
+  const {
+    transposeSemitones, setTransposeSemitones,
+    capo, setCapo,
+    capoEnabled, setCapoEnabled,
+    preferFlats, setPreferFlats,
+  } = useSongSettings(song?.id ?? '', song?.key ?? null, song?.capo ?? 0)
   const [chordFormat, setChordFormat] = useState<ChordFormat>(() => {
     try {
       const stored = localStorage.getItem('chordFormat')

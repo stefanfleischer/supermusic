@@ -5,6 +5,7 @@ import { getSong, deleteSong } from '@/lib/server/songs'
 import { parseChordPro } from '@/lib/chordpro/parser'
 import { keyUsesFlats } from '@/lib/chordpro/transpose'
 import { defaultChordFormat, type ChordFormat } from '@/components/song/ChordFormatContext'
+import { useSongSettings } from '@/lib/useSongSettings'
 import SongRenderer from '@/components/song/SongRenderer'
 import TransposeControls from '@/components/song/TransposeControls'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
@@ -22,10 +23,12 @@ export const Route = createFileRoute('/songs/$songId')({
 function SongViewPage() {
   const { song } = Route.useLoaderData()
   const navigate = useNavigate()
-  const [transposeSemitones, setTransposeSemitones] = useState(0)
-  const [capo, setCapo] = useState(song.capo)
-  const [capoEnabled, setCapoEnabled] = useState(song.capo > 0)
-  const [preferFlats, setPreferFlats] = useState(() => keyUsesFlats(song.key))
+  const {
+    transposeSemitones, setTransposeSemitones,
+    capo, setCapo,
+    capoEnabled, setCapoEnabled,
+    preferFlats, setPreferFlats,
+  } = useSongSettings(song.id, song.key, song.capo)
   const [chordFormat, setChordFormat] = useState<ChordFormat>(() => {
     try {
       const stored = localStorage.getItem('chordFormat')

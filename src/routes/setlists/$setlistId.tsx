@@ -180,7 +180,7 @@ function SetlistViewPage() {
               className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-300 hover:bg-slate-700 transition-colors"
             >
               <Edit size={16} />
-              Edit
+              Edit Setlist
             </Link>
             <button
               onClick={() => setShowDeleteDialog(true)}

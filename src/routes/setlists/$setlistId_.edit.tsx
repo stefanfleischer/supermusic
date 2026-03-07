@@ -7,6 +7,9 @@ import type { SetlistEntry } from '@/lib/types'
 import SetlistEditor from '@/components/setlist/SetlistEditor'
 
 export const Route = createFileRoute('/setlists/$setlistId_/edit')({
+  validateSearch: (search: Record<string, unknown>) => ({
+    fromList: Boolean(search.fromList),
+  }),
   loader: async ({ params }) => {
     const [setlist, songs] = await Promise.all([
       getSetlist({ data: { id: params.setlistId } }),
@@ -20,7 +23,12 @@ export const Route = createFileRoute('/setlists/$setlistId_/edit')({
 
 function EditSetlistPage() {
   const { setlist, songs } = Route.useLoaderData()
+  const { fromList } = Route.useSearch()
   const navigate = useNavigate()
+
+  const backTo = fromList
+    ? { to: '/setlists' as '/' }
+    : { to: '/setlists/$setlistId' as '/', params: { setlistId: setlist.id } as any }
   const [saving, setSaving] = useState(false)
   const [name, setName] = useState(setlist.name)
   const [description, setDescription] = useState(setlist.description)
@@ -40,10 +48,7 @@ function EditSetlistPage() {
           songEntries: entries,
         },
       })
-      navigate({
-        to: '/setlists/$setlistId' as '/',
-        params: { setlistId: setlist.id } as any,
-      })
+      navigate(backTo as any)
     } finally {
       setSaving(false)
     }
@@ -55,8 +60,8 @@ function EditSetlistPage() {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <Link
-              to={'/setlists/$setlistId' as '/'}
-              params={{ setlistId: setlist.id } as any}
+              to={backTo.to}
+              params={(backTo as any).params}
               className="p-2 rounded-lg hover:bg-slate-700 text-gray-400 hover:text-white transition-colors"
             >
               <ArrowLeft size={20} />

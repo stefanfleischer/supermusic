@@ -42,6 +42,7 @@ export default function SetlistCard({ setlist }: SetlistCardProps) {
       <Link
         to={'/setlists/$setlistId/edit' as '/'}
         params={{ setlistId: setlist.id } as any}
+        search={{ fromList: true } as any}
         className="absolute top-3 right-3 p-1.5 rounded-lg text-gray-500 hover:text-white hover:bg-slate-700 transition-colors"
         title="Edit Setlist"
       >

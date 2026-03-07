@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Plus, Search } from 'lucide-react'
+import { Plus, Search, Clock } from 'lucide-react'
 import type { Song, SetlistEntry } from '@/lib/types'
 import SetlistSongRow from './SetlistSongRow'
 
@@ -36,6 +36,13 @@ export default function SetlistEditor({
     ])
   }
 
+  function addMoment() {
+    onChange([
+      ...entries,
+      { songId: '', momentTitle: 'Pause', transposeSemitones: 0, capo: 0, notes: '' },
+    ])
+  }
+
   function removeSong(index: number) {
     onChange(entries.filter((_, i) => i !== index))
   }
@@ -62,13 +69,22 @@ export default function SetlistEditor({
         <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
           Songs ({entries.length})
         </h3>
-        <button
-          onClick={() => setShowPicker(!showPicker)}
-          className="flex items-center gap-1 text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
-        >
-          <Plus size={16} />
-          Add Song
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={addMoment}
+            className="flex items-center gap-1 text-sm text-amber-400 hover:text-amber-300 transition-colors"
+          >
+            <Clock size={16} />
+            Add Moment
+          </button>
+          <button
+            onClick={() => setShowPicker(!showPicker)}
+            className="flex items-center gap-1 text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
+          >
+            <Plus size={16} />
+            Add Song
+          </button>
+        </div>
       </div>
 
       {/* Song picker */}

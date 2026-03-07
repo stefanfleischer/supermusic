@@ -51,7 +51,8 @@ export interface Setlist {
 }
 
 export interface SetlistEntry {
-  songId: string
+  songId: string            // empty string for moments
+  momentTitle?: string      // set → this is a moment, not a song
   transposeSemitones: number // per-setlist key override (0 = original)
   capo: number // per-setlist capo override
   notes: string // performance notes

@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
-import { ArrowLeft, Edit, Trash2, Music } from 'lucide-react'
-import { getBook, deleteBook } from '@/lib/server/books'
+import { ArrowLeft, Edit, Trash2, Music, X } from 'lucide-react'
+import { getBook, deleteBook, updateBook } from '@/lib/server/books'
 import { getSongs } from '@/lib/server/songs'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import Badge from '@/components/ui/Badge'
@@ -23,11 +23,18 @@ function BookViewPage() {
   const navigate = useNavigate()
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
-  const bookSongs = songs.filter((s) => book.songIds.includes(s.id))
+  const [songIds, setSongIds] = useState(book.songIds)
+  const bookSongs = songs.filter((s) => songIds.includes(s.id))
 
   async function handleDelete() {
     await deleteBook({ data: { id: book.id } })
     navigate({ to: '/books' as '/' })
+  }
+
+  async function handleRemoveSong(songId: string) {
+    const updated = songIds.filter((id) => id !== songId)
+    setSongIds(updated)
+    await updateBook({ data: { id: book.id, songIds: updated } })
   }
 
   return (
@@ -73,23 +80,31 @@ function BookViewPage() {
         {bookSongs.length > 0 ? (
           <div className="space-y-2">
             {bookSongs.map((song) => (
-              <Link
+              <div
                 key={song.id}
-                to="/songs/$songId"
-                params={{ songId: song.id }}
                 className="flex items-center gap-3 p-3 bg-slate-800/50 border border-slate-700 rounded-lg hover:border-cyan-500/50 transition-all"
               >
                 <Music size={16} className="text-cyan-400 shrink-0" />
-                <div className="min-w-0 flex-1">
+                <Link
+                  to="/songs/$songId"
+                  params={{ songId: song.id }}
+                  className="min-w-0 flex-1"
+                >
                   <span className="text-white text-sm">{song.title}</span>
                   {song.artist && (
                     <span className="text-gray-400 text-sm ml-2">
                       {song.artist}
                     </span>
                   )}
-                </div>
-                {song.key && <Badge variant="cyan">{song.key}</Badge>}
-              </Link>
+                </Link>
+                <button
+                  onClick={() => handleRemoveSong(song.id)}
+                  className="p-1 rounded text-gray-500 hover:text-red-400 hover:bg-red-400/10 transition-colors"
+                  title="Aus Buch entfernen"
+                >
+                  <X size={16} />
+                </button>
+              </div>
             ))}
           </div>
         ) : (

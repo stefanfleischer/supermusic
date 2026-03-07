@@ -32,16 +32,10 @@ export default function SongCard({ song, setlists = [] }: SongCardProps) {
   }, [open])
 
   async function handleAddToSetlist(setlist: Setlist) {
-    // Avoid duplicates
-    const alreadyIn = setlist.songEntries.some((e) => e.songId === song.id)
-    const updatedEntries = alreadyIn
-      ? setlist.songEntries
-      : [...setlist.songEntries, { songId: song.id, transposeSemitones: 0, capo: 0, notes: '' }]
-
     await updateSetlist({
       data: {
         id: setlist.id,
-        songEntries: updatedEntries,
+        songEntries: [...setlist.songEntries, { songId: song.id, transposeSemitones: 0, capo: 0, notes: '' }],
       },
     })
     setAdded(setlist.id)

@@ -20,14 +20,13 @@ export default function SetlistEditor({
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
 
   const entryIds = new Set(entries.map((e) => e.songId))
-  const availableSongs = allSongs.filter((s) => !entryIds.has(s.id))
   const filteredAvailable = searchQuery
-    ? availableSongs.filter(
+    ? allSongs.filter(
         (s) =>
           s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
           s.artist.toLowerCase().includes(searchQuery.toLowerCase()),
       )
-    : availableSongs
+    : allSongs
 
   function addSong(songId: string) {
     onChange([
@@ -106,24 +105,27 @@ export default function SetlistEditor({
           <div className="max-h-40 overflow-y-auto space-y-1">
             {filteredAvailable.length === 0 ? (
               <p className="text-gray-500 text-sm py-2 text-center">
-                {availableSongs.length === 0
-                  ? 'All songs already in setlist'
-                  : 'No matching songs'}
+                No matching songs
               </p>
             ) : (
               filteredAvailable.map((song) => (
                 <button
                   key={song.id}
                   onClick={() => addSong(song.id)}
-                  className="w-full text-left px-2 py-1.5 rounded text-sm text-gray-300 hover:bg-slate-800 transition-colors flex items-center justify-between"
+                  className="w-full text-left px-2 py-1.5 rounded text-sm text-gray-300 hover:bg-slate-800 transition-colors flex items-center justify-between gap-2"
                 >
-                  <span className="truncate">
+                  <span className="truncate flex-1">
                     {song.title}
                     {song.artist && (
                       <span className="text-gray-500"> - {song.artist}</span>
                     )}
                   </span>
-                  <Plus size={14} className="shrink-0 text-cyan-400" />
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    {entryIds.has(song.id) && (
+                      <span className="text-xs text-gray-500">already in</span>
+                    )}
+                    <Plus size={14} className="text-cyan-400" />
+                  </div>
                 </button>
               ))
             )}

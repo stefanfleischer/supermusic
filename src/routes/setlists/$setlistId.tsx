@@ -1,12 +1,15 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useState, useMemo } from 'react'
-import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Edit, Trash2, Music, X } from 'lucide-react'
+import { ArrowLeft, Edit, Trash2, X } from 'lucide-react'
 import { getSetlist, deleteSetlist, updateSetlist } from '@/lib/server/setlists'
 import { getSongs } from '@/lib/server/songs'
 import { parseChordPro } from '@/lib/chordpro/parser'
+import { keyUsesFlats } from '@/lib/chordpro/transpose'
 import SongRenderer from '@/components/song/SongRenderer'
+import TransposeControls from '@/components/song/TransposeControls'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import Badge from '@/components/ui/Badge'
+import { defaultChordFormat, type ChordFormat } from '@/components/song/ChordFormatContext'
 
 import type { SetlistEntry, Song } from '@/lib/types'
 
@@ -27,59 +30,84 @@ function CurrentSongView({
 }) {
   const entry = entries[currentIndex]
   const song = songMap.get(entry.songId)
-  const parsed = song ? parseChordPro(song.content) : null
+
+  const [transposeSemitones, setTransposeSemitones] = useState(entry.transposeSemitones)
+  const [capo, setCapo] = useState(song?.capo ?? 0)
+  const [capoEnabled, setCapoEnabled] = useState((song?.capo ?? 0) > 0)
+  const [preferFlats, setPreferFlats] = useState(() => keyUsesFlats(song?.key ?? null))
+  const [chordFormat, setChordFormat] = useState<ChordFormat>(() => {
+    try {
+      const stored = localStorage.getItem('chordFormat')
+      return stored ? { ...defaultChordFormat, ...JSON.parse(stored) } : defaultChordFormat
+    } catch { return defaultChordFormat }
+  })
+
+  function handleChordFormatChange(format: ChordFormat) {
+    setChordFormat(format)
+    try { localStorage.setItem('chordFormat', JSON.stringify(format)) } catch {}
+  }
+
+  const parsed = useMemo(() => song ? parseChordPro(song.content) : null, [song])
+
+  if (!song || !parsed) return null
 
   return (
-    <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
-      <div className="flex items-center gap-3 mb-4 pb-3 border-b border-slate-700">
-        <button
-          onClick={onPrev}
-          disabled={currentIndex === 0}
-          className="p-1 rounded text-gray-400 hover:text-white hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-        >
-          <ChevronLeft size={18} />
-        </button>
-        <span className="text-gray-500 text-sm font-mono shrink-0">
-          {currentIndex + 1} / {entries.length}
-        </span>
-        <button
-          onClick={onNext}
-          disabled={currentIndex === entries.length - 1}
-          className="p-1 rounded text-gray-400 hover:text-white hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-        >
-          <ChevronRight size={18} />
-        </button>
-        <Music size={16} className="text-cyan-400 shrink-0" />
-        {song && (
-          <Link
-            to="/songs/$songId"
-            params={{ songId: song.id }}
-            className="text-white font-semibold hover:text-cyan-400 transition-colors flex-1 truncate"
+    <div>
+      {/* Song header */}
+      <div className="mb-4">
+        <div className="flex items-start justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-white">{song.title}</h2>
+            {song.artist && <p className="text-gray-400">{song.artist}</p>}
+          </div>
+          <button
+            onClick={onRemove}
+            className="p-2 rounded-lg text-gray-500 hover:text-red-400 hover:bg-red-400/10 transition-colors"
+            title="Aus Setlist entfernen"
           >
-            {song.title}
-          </Link>
-        )}
-        {song?.artist && (
-          <span className="text-gray-400 text-sm shrink-0">{song.artist}</span>
-        )}
-        {song?.key && (
-          <Badge variant="cyan">
-            {entry.transposeSemitones !== 0
-              ? `${song.key} (+${entry.transposeSemitones})`
-              : song.key}
-          </Badge>
-        )}
-        <button
-          onClick={onRemove}
-          className="p-1 rounded text-gray-500 hover:text-red-400 hover:bg-red-400/10 transition-colors shrink-0"
-          title="Aus Setlist entfernen"
-        >
-          <X size={16} />
-        </button>
+            <X size={18} />
+          </button>
+        </div>
+
+        {/* Metadata badges */}
+        <div className="flex flex-wrap gap-2 mt-3">
+          {song.key && <Badge variant="cyan">Original Key: {song.key}</Badge>}
+          {song.tempo && <Badge variant="outline">{song.tempo} BPM</Badge>}
+          {song.timeSignature && <Badge variant="outline">{song.timeSignature}</Badge>}
+          {song.tags.map((tag) => <Badge key={tag}>{tag}</Badge>)}
+        </div>
       </div>
-      {parsed && song && (
-        <SongRenderer parsedSong={parsed} transposeSemitones={entry.transposeSemitones} />
-      )}
+
+      {/* TransposeControls with prev/next */}
+      <div className="mb-6">
+        <TransposeControls
+          originalKey={song.key}
+          transposeSemitones={transposeSemitones}
+          capo={capo}
+          capoEnabled={capoEnabled}
+          preferFlats={preferFlats}
+          chordFormat={chordFormat}
+          onTransposeChange={setTransposeSemitones}
+          onCapoChange={setCapo}
+          onCapoEnabledChange={setCapoEnabled}
+          onPreferFlatsChange={setPreferFlats}
+          onChordFormatChange={handleChordFormatChange}
+          onPrev={onPrev}
+          onNext={onNext}
+          hasPrev={currentIndex > 0}
+          hasNext={currentIndex < entries.length - 1}
+        />
+      </div>
+
+      {/* Song content */}
+      <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
+        <SongRenderer
+          parsedSong={parsed}
+          transposeSemitones={transposeSemitones - (capoEnabled ? capo : 0)}
+          preferFlats={preferFlats}
+          chordFormat={chordFormat}
+        />
+      </div>
     </div>
   )
 }

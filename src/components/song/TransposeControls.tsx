@@ -1,4 +1,4 @@
-import { Minus, Plus, Type } from 'lucide-react'
+import { Minus, Plus, Type, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
 import { transposeKey, keyUsesFlats } from '@/lib/chordpro/transpose'
 import { ALL_KEYS, NOTE_TO_INDEX } from '@/lib/chordpro/constants'
@@ -25,6 +25,11 @@ interface TransposeControlsProps {
   onCapoEnabledChange: (enabled: boolean) => void
   onPreferFlatsChange: (preferFlats: boolean) => void
   onChordFormatChange: (format: ChordFormat) => void
+  // Optional prev/next navigation (for setlist view)
+  onPrev?: () => void
+  onNext?: () => void
+  hasPrev?: boolean
+  hasNext?: boolean
 }
 
 export default function TransposeControls({
@@ -39,6 +44,10 @@ export default function TransposeControls({
   onCapoEnabledChange,
   onPreferFlatsChange,
   onChordFormatChange,
+  onPrev,
+  onNext,
+  hasPrev,
+  hasNext,
 }: TransposeControlsProps) {
   const [formatOpen, setFormatOpen] = useState(false)
   const formatRef = useRef<HTMLDivElement>(null)
@@ -74,6 +83,25 @@ export default function TransposeControls({
 
   return (
     <div className="flex flex-wrap items-center gap-4 p-3 bg-slate-800/50 border border-slate-700 rounded-lg">
+      {/* Prev / Next navigation (setlist) */}
+      {(onPrev || onNext) && (
+        <div className="flex items-center gap-1">
+          <button
+            onClick={onPrev}
+            disabled={!hasPrev}
+            className="p-1 rounded text-gray-400 hover:text-white hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            <ChevronLeft size={18} />
+          </button>
+          <button
+            onClick={onNext}
+            disabled={!hasNext}
+            className="p-1 rounded text-gray-400 hover:text-white hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            <ChevronRight size={18} />
+          </button>
+        </div>
+      )}
       {/* Transpose: Key − [Key Dropdown] + */}
       <div className="flex items-center gap-1">
         <span className="text-xs text-gray-400 uppercase tracking-wider mr-1">

@@ -1,7 +1,8 @@
 import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ArrowLeft, Save } from 'lucide-react'
 import { getSong, updateSong } from '@/lib/server/songs'
+import { parseChordPro } from '@/lib/chordpro/parser'
 import SongEditor from '@/components/song/SongEditor'
 import SongMetadataForm from '@/components/song/SongMetadataForm'
 import type { SongMetadata } from '@/components/song/SongMetadataForm'
@@ -33,6 +34,23 @@ function EditSongPage() {
   })
 
   const [content, setContent] = useState(song.content)
+
+  // Auto-populate metadata from ChordPro directives when content changes
+  useEffect(() => {
+    const parsed = parseChordPro(content)
+    const m = parsed.metadata
+    setMetadata((prev) => ({
+      ...prev,
+      ...(m.title      ? { title: m.title }           : {}),
+      ...(m.artist     ? { artist: m.artist }          : {}),
+      ...(m.key        ? { key: m.key }                : {}),
+      ...(m.tempo      ? { tempo: String(m.tempo) }    : {}),
+      ...(m.timeSignature ? { timeSignature: m.timeSignature } : {}),
+      ...(m.capo       ? { capo: Number(m.capo) }      : {}),
+      ...(m.ccli       ? { ccli: m.ccli }              : {}),
+      ...(m.copyright  ? { copyright: m.copyright }    : {}),
+    }))
+  }, [content])
 
   async function handleSave() {
     if (!metadata.title.trim()) return

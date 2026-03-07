@@ -37,8 +37,11 @@ export default function TransposeControls({
 
   return (
     <div className="flex flex-wrap items-center gap-4 p-3 bg-slate-800/50 border border-slate-700 rounded-lg">
-      {/* Transpose: − [Key Dropdown] + */}
+      {/* Transpose: Key − [Key Dropdown] + */}
       <div className="flex items-center gap-1">
+        <span className="text-xs text-gray-400 uppercase tracking-wider mr-1">
+          Key
+        </span>
         <button
           onClick={() => onTransposeChange(transposeSemitones - 1)}
           className="p-1 rounded hover:bg-slate-700 text-gray-400 hover:text-white transition-colors"

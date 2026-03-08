@@ -51,6 +51,7 @@ function SongViewPage() {
     try { localStorage.setItem('chordFormat', JSON.stringify(format)) } catch {}
   }
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [showCommentToolbar, setShowCommentToolbar] = useState(false)
 
   const parsedSong = useMemo(() => parseChordPro(song.content), [song.content])
 
@@ -128,14 +129,18 @@ function SongViewPage() {
             onCapoEnabledChange={setCapoEnabled}
             onPreferFlatsChange={setPreferFlats}
             onChordFormatChange={handleChordFormatChange}
+            showCommentToolbar={showCommentToolbar}
+            onToggleCommentToolbar={() => setShowCommentToolbar((v) => !v)}
           />
         </div>
 
         {/* Comment toolbar */}
-        <div className="flex items-center gap-2 px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg mb-4 text-gray-400">
-          <Pencil size={15} />
-          <span className="text-sm">Comment</span>
-        </div>
+        {showCommentToolbar && (
+          <div className="flex items-center gap-2 px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg mb-4 text-gray-400">
+            <Pencil size={15} />
+            <span className="text-sm">Comment</span>
+          </div>
+        )}
 
         {/* Song content */}
         <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">

@@ -1,4 +1,4 @@
-import { Minus, Plus, Type, ChevronLeft, ChevronRight, Clock } from 'lucide-react'
+import { Minus, Plus, Type, ChevronLeft, ChevronRight, Clock, Pencil } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
 import { transposeKey, keyUsesFlats } from '@/lib/chordpro/transpose'
 import { ALL_KEYS, NOTE_TO_INDEX } from '@/lib/chordpro/constants'
@@ -35,6 +35,9 @@ interface TransposeControlsProps {
   navItems?: string[]         // song titles for dropdown
   navItemMoments?: boolean[]  // true = moment entry
   onNavSelect?: (index: number) => void
+  // Comment toolbar toggle
+  showCommentToolbar?: boolean
+  onToggleCommentToolbar?: () => void
 }
 
 export default function TransposeControls({
@@ -58,6 +61,8 @@ export default function TransposeControls({
   navItems,
   navItemMoments,
   onNavSelect,
+  showCommentToolbar,
+  onToggleCommentToolbar,
 }: TransposeControlsProps) {
   const [formatOpen, setFormatOpen] = useState(false)
   const formatRef = useRef<HTMLDivElement>(null)
@@ -228,8 +233,21 @@ export default function TransposeControls({
         </div>
       )}
 
+      {/* Comment + Chord Format (right-aligned group) */}
+      <div className="flex items-center gap-1 ml-auto">
+        {/* Comment toggle */}
+        <button
+          onClick={onToggleCommentToolbar}
+          className={`flex items-center gap-1.5 px-2 py-1 rounded text-xs uppercase tracking-wider transition-colors ${
+            showCommentToolbar ? 'bg-slate-600 text-white' : 'text-gray-400 hover:text-white hover:bg-slate-700'
+          }`}
+        >
+          <Pencil size={14} />
+          Comment
+        </button>
+
       {/* Chord Format */}
-      <div className="relative ml-auto" ref={formatRef}>
+      <div className="relative" ref={formatRef}>
         <button
           onClick={() => setFormatOpen((o) => !o)}
           className={`flex items-center gap-1.5 px-2 py-1 rounded text-xs uppercase tracking-wider transition-colors ${
@@ -280,6 +298,7 @@ export default function TransposeControls({
             </div>
           </div>
         )}
+      </div>
       </div>
     </div>
   )

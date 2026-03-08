@@ -42,6 +42,7 @@ function CurrentSongView({
     preferFlats, setPreferFlats,
   } = useSongSettings(song?.id ?? '', song?.key ?? null, song?.capo ?? 0)
   const [navOpen, setNavOpen] = useState(false)
+  const [showCommentToolbar, setShowCommentToolbar] = useState(false)
   const [chordFormat, setChordFormat] = useState<ChordFormat>(() => {
     try {
       const stored = localStorage.getItem('chordFormat')
@@ -187,14 +188,18 @@ function CurrentSongView({
           navItems={entries.map((e) => e.momentTitle !== undefined ? (e.momentTitle || 'Pause') : (songMap.get(e.songId)?.title ?? '–'))}
           navItemMoments={entries.map((e) => e.momentTitle !== undefined)}
           onNavSelect={onNavSelect}
+          showCommentToolbar={showCommentToolbar}
+          onToggleCommentToolbar={() => setShowCommentToolbar((v) => !v)}
         />
       </div>
 
       {/* Comment toolbar */}
-      <div className="flex items-center gap-2 px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg mb-4 text-gray-400">
-        <Pencil size={15} />
-        <span className="text-sm">Comment</span>
-      </div>
+      {showCommentToolbar && (
+        <div className="flex items-center gap-2 px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg mb-4 text-gray-400">
+          <Pencil size={15} />
+          <span className="text-sm">Comment</span>
+        </div>
+      )}
 
       {/* Song content */}
       <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">

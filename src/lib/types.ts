@@ -22,6 +22,19 @@ export interface Song {
 }
 
 export type SongCreate = Omit<Song, 'id' | 'createdAt' | 'updatedAt'>
+
+// ─── Song Annotation ────────────────────────────────────────────────────
+
+export interface SongAnnotation {
+  id: string
+  songId: string
+  type: string        // e.g. 'note', 'highlight', ... (extensible)
+  data: Record<string, unknown>  // flexible payload per type
+  createdAt: string
+  updatedAt: string
+}
+
+export type SongAnnotationCreate = Omit<SongAnnotation, 'id' | 'createdAt' | 'updatedAt'>
 export type SongUpdate = Partial<SongCreate> & { id: string }
 
 // ─── Book ───────────────────────────────────────────────────────────────

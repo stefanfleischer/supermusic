@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useState, useMemo } from 'react'
-import { ArrowLeft, Edit, Trash2, X, ChevronLeft, ChevronRight, Clock } from 'lucide-react'
+import { ArrowLeft, Edit, Trash2, X, ChevronLeft, ChevronRight, Clock, Pencil } from 'lucide-react'
 import { getSetlist, deleteSetlist, updateSetlist } from '@/lib/server/setlists'
 import { getSongs } from '@/lib/server/songs'
 import { parseChordPro } from '@/lib/chordpro/parser'
@@ -188,6 +188,12 @@ function CurrentSongView({
           navItemMoments={entries.map((e) => e.momentTitle !== undefined)}
           onNavSelect={onNavSelect}
         />
+      </div>
+
+      {/* Comment toolbar */}
+      <div className="flex items-center gap-2 px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg mb-4 text-gray-400">
+        <Pencil size={15} />
+        <span className="text-sm">Comment</span>
       </div>
 
       {/* Song content */}

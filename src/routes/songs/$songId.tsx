@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useState, useMemo } from 'react'
-import { ArrowLeft, Edit, Trash2 } from 'lucide-react'
+import { ArrowLeft, Edit, Trash2, Pencil } from 'lucide-react'
 import { getSong, deleteSong } from '@/lib/server/songs'
 import { parseChordPro } from '@/lib/chordpro/parser'
 import { keyUsesFlats } from '@/lib/chordpro/transpose'
@@ -129,6 +129,12 @@ function SongViewPage() {
             onPreferFlatsChange={setPreferFlats}
             onChordFormatChange={handleChordFormatChange}
           />
+        </div>
+
+        {/* Comment toolbar */}
+        <div className="flex items-center gap-2 px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg mb-4 text-gray-400">
+          <Pencil size={15} />
+          <span className="text-sm">Comment</span>
         </div>
 
         {/* Song content */}

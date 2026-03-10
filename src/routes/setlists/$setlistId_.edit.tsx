@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { ArrowLeft, Save } from 'lucide-react'
 import { getSetlist, updateSetlist } from '@/lib/server/setlists'
 import { getSongs } from '@/lib/server/songs'
+import { getBooks } from '@/lib/server/books'
 import type { SetlistEntry } from '@/lib/types'
 import SetlistEditor from '@/components/setlist/SetlistEditor'
 
@@ -11,18 +12,19 @@ export const Route = createFileRoute('/setlists/$setlistId_/edit')({
     fromList: Boolean(search.fromList),
   }),
   loader: async ({ params }) => {
-    const [setlist, songs] = await Promise.all([
+    const [setlist, songs, books] = await Promise.all([
       getSetlist({ data: { id: params.setlistId } }),
       getSongs(),
+      getBooks(),
     ])
     if (!setlist) throw new Error('Setlist not found')
-    return { setlist, songs }
+    return { setlist, songs, books }
   },
   component: EditSetlistPage,
 })
 
 function EditSetlistPage() {
-  const { setlist, songs } = Route.useLoaderData()
+  const { setlist, songs, books } = Route.useLoaderData()
   const { fromList } = Route.useSearch()
   const navigate = useNavigate()
 
@@ -128,6 +130,7 @@ function EditSetlistPage() {
             <SetlistEditor
               entries={entries}
               allSongs={songs}
+              books={books}
               onChange={setEntries}
             />
           </div>

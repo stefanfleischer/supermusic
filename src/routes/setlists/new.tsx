@@ -3,19 +3,20 @@ import { useState } from 'react'
 import { ArrowLeft, Save } from 'lucide-react'
 import { createSetlist } from '@/lib/server/setlists'
 import { getSongs } from '@/lib/server/songs'
+import { getBooks } from '@/lib/server/books'
 import type { SetlistEntry } from '@/lib/types'
 import SetlistEditor from '@/components/setlist/SetlistEditor'
 
 export const Route = createFileRoute('/setlists/new')({
   loader: async () => {
-    const songs = await getSongs()
-    return { songs }
+    const [songs, books] = await Promise.all([getSongs(), getBooks()])
+    return { songs, books }
   },
   component: NewSetlistPage,
 })
 
 function NewSetlistPage() {
-  const { songs } = Route.useLoaderData()
+  const { songs, books } = Route.useLoaderData()
   const navigate = useNavigate()
   const [saving, setSaving] = useState(false)
   const [name, setName] = useState('')
@@ -115,6 +116,7 @@ function NewSetlistPage() {
             <SetlistEditor
               entries={entries}
               allSongs={songs}
+              books={books}
               onChange={setEntries}
             />
           </div>

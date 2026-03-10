@@ -1,32 +1,44 @@
 import { useState } from 'react'
 import { Plus, Search, Clock } from 'lucide-react'
-import type { Song, SetlistEntry } from '@/lib/types'
+import type { Song, SetlistEntry, Book } from '@/lib/types'
 import SetlistSongRow from './SetlistSongRow'
 
 interface SetlistEditorProps {
   entries: SetlistEntry[]
   allSongs: Song[]
+  books?: Book[]
   onChange: (entries: SetlistEntry[]) => void
 }
 
 export default function SetlistEditor({
   entries,
   allSongs,
+  books = [],
   onChange,
 }: SetlistEditorProps) {
   const [searchQuery, setSearchQuery] = useState('')
+  const [selectedBook, setSelectedBook] = useState<string | null>(null)
   const [showPicker, setShowPicker] = useState(false)
   const [dragIndex, setDragIndex] = useState<number | null>(null)
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
 
   const entryIds = new Set(entries.map((e) => e.songId))
-  const filteredAvailable = searchQuery
-    ? allSongs.filter(
-        (s) =>
-          s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          s.artist.toLowerCase().includes(searchQuery.toLowerCase()),
+
+  const bookSongIds = selectedBook
+    ? new Set(books.find((b) => b.name === selectedBook)?.songIds ?? [])
+    : null
+
+  const filteredAvailable = allSongs.filter((s) => {
+    if (bookSongIds && !bookSongIds.has(s.id)) return false
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase()
+      return (
+        s.title.toLowerCase().includes(q) ||
+        s.artist.toLowerCase().includes(q)
       )
-    : allSongs
+    }
+    return true
+  })
 
   function addSong(songId: string) {
     onChange([
@@ -102,6 +114,27 @@ export default function SetlistEditor({
               className="w-full bg-slate-800 border border-slate-700 rounded-lg pl-8 pr-3 py-1.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500"
             />
           </div>
+
+          {/* Book filter buttons */}
+          {books.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 mb-2">
+              {books.map((book) => (
+                <button
+                  key={book.id}
+                  onClick={() =>
+                    setSelectedBook(selectedBook === book.name ? null : book.name)
+                  }
+                  className={`px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors ${
+                    selectedBook === book.name
+                      ? 'bg-cyan-500 text-white'
+                      : 'bg-slate-700 text-gray-400 hover:bg-slate-600 hover:text-white'
+                  }`}
+                >
+                  {book.name}
+                </button>
+              ))}
+            </div>
+          )}
           <div className="max-h-40 overflow-y-auto space-y-1">
             {filteredAvailable.length === 0 ? (
               <p className="text-gray-500 text-sm py-2 text-center">

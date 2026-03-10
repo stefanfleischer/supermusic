@@ -113,7 +113,7 @@ export default function SongNote({ annotation, onUpdate, onDelete }: SongNotePro
         </div>
 
         {/* Font size controls */}
-        <div className="flex flex-col items-center gap-0.5">
+        <div className="flex flex-col items-center gap-2.5">
           <button
             onMouseDown={(e) => e.stopPropagation()}
             onClick={() => changeFontSize(1)}

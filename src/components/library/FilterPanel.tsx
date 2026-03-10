@@ -9,6 +9,7 @@ interface FilterPanelProps {
   selectedTag: string
   selectedBook: string
   sortBy: string
+  bookOptions?: string[] // if provided, use instead of deriving from song.books
   onKeyChange: (key: string) => void
   onArtistChange: (artist: string) => void
   onTagChange: (tag: string) => void
@@ -23,16 +24,17 @@ export default function FilterPanel({
   selectedTag,
   selectedBook,
   sortBy,
+  bookOptions,
   onKeyChange,
   onArtistChange,
   onTagChange,
   onBookChange,
   onSortChange,
 }: FilterPanelProps) {
-  // Derive unique artists, tags and books from the song library
+  // Derive unique artists and tags from the song library
   const artists = [...new Set(songs.map((s) => s.artist).filter(Boolean))].sort()
   const tags = [...new Set(songs.flatMap((s) => s.tags).filter(Boolean))].sort()
-  const books = [...new Set(songs.flatMap((s) => s.books).filter(Boolean))].sort()
+  const books = bookOptions ?? [...new Set(songs.flatMap((s) => s.books).filter(Boolean))].sort()
 
   const selectClass =
     'bg-slate-800 border border-slate-700 text-white text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-cyan-500 transition-colors'

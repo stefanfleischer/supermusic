@@ -3,7 +3,8 @@ import { useMemo } from 'react'
 import { Music, Plus } from 'lucide-react'
 import { getSongs } from '@/lib/server/songs'
 import { getSetlists, updateSetlist } from '@/lib/server/setlists'
-import type { Song, Setlist } from '@/lib/types'
+import { getBooks } from '@/lib/server/books'
+import type { Song, Setlist, Book } from '@/lib/types'
 import SongList from '@/components/library/SongList'
 import SearchBar from '@/components/library/SearchBar'
 import FilterPanel from '@/components/library/FilterPanel'
@@ -19,8 +20,8 @@ export const Route = createFileRoute('/songs/')({
     sort: (search.sort as string) || 'title',
   }),
   loader: async () => {
-    const [songs, setlists] = await Promise.all([getSongs(), getSetlists()])
-    return { songs, setlists }
+    const [songs, setlists, books] = await Promise.all([getSongs(), getSetlists(), getBooks()])
+    return { songs, setlists, books }
   },
   component: SongsPage,
 })
@@ -33,6 +34,7 @@ function filterAndSortSongs(
   tag: string,
   book: string,
   sort: string,
+  bookSongIds?: string[],
 ): Song[] {
   let results = songs
 
@@ -59,8 +61,8 @@ function filterAndSortSongs(
     results = results.filter((song) => song.tags.includes(tag))
   }
 
-  if (book) {
-    results = results.filter((song) => song.books.includes(book))
+  if (book && bookSongIds) {
+    results = results.filter((song) => bookSongIds.includes(song.id))
   }
 
   results.sort((a, b) => {
@@ -78,13 +80,22 @@ function filterAndSortSongs(
 }
 
 function SongsPage() {
-  const { songs, setlists } = Route.useLoaderData()
+  const { songs, setlists, books } = Route.useLoaderData()
   const { q, key, artist, tag, book, sort } = Route.useSearch()
   const navigate = useNavigate()
 
+  const bookOptions = useMemo(
+    () => books.map((b: Book) => b.name).sort(),
+    [books],
+  )
+  const selectedBookSongIds = useMemo(
+    () => books.find((b: Book) => b.name === book)?.songIds,
+    [books, book],
+  )
+
   const filteredSongs = useMemo(
-    () => filterAndSortSongs(songs, q, key, artist, tag, book, sort),
-    [songs, q, key, artist, tag, book, sort],
+    () => filterAndSortSongs(songs, q, key, artist, tag, book, sort, selectedBookSongIds),
+    [songs, q, key, artist, tag, book, sort, selectedBookSongIds],
   )
 
   function updateSearch(updates: Record<string, string>) {
@@ -130,6 +141,7 @@ function SongsPage() {
               selectedTag={tag}
               selectedBook={book}
               sortBy={sort}
+              bookOptions={bookOptions}
               onKeyChange={(value) => updateSearch({ key: value })}
               onArtistChange={(value) => updateSearch({ artist: value })}
               onTagChange={(value) => updateSearch({ tag: value })}

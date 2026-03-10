@@ -95,7 +95,7 @@ function CurrentSongView({
         {/* TransposeControls — moment mode: only nav */}
         <div className="mb-6">
           <TransposeControls
-            originalKey={null}
+            originalKey="C"
             transposeSemitones={0}
             capo={0}
             capoEnabled={false}
@@ -105,7 +105,7 @@ function CurrentSongView({
             onCapoChange={() => {}}
             onCapoEnabledChange={() => {}}
             onPreferFlatsChange={() => {}}
-            onChordFormatChange={handleChordFormatChange}
+            onChordFormatChange={() => {}}
             onPrev={onPrev}
             onNext={onNext}
             hasPrev={currentIndex > 0}

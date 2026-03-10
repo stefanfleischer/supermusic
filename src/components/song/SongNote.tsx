@@ -64,34 +64,33 @@ export default function SongNote({ annotation, onUpdate, onDelete }: SongNotePro
   return (
     <div
       style={{ left: pos.x, top: pos.y }}
-      className="absolute z-20 w-52 shadow-xl shadow-black/30 rounded-lg"
+      className="absolute z-20 w-52 shadow-xl shadow-black/30 rounded-lg flex"
     >
-      {/* Header / drag handle */}
-      <div
-        onMouseDown={handleDragStart}
-        className="cursor-grab active:cursor-grabbing bg-amber-300 rounded-t-lg px-3 py-1.5 flex items-center justify-between select-none"
-      >
-        <span className="text-amber-900 text-xs font-semibold opacity-70 tracking-wide">
-          ⠿ Notiz
-        </span>
-        <button
-          onMouseDown={(e) => e.stopPropagation()}
-          onClick={() => onDelete(annotation.id)}
-          className="text-amber-800 hover:text-amber-950 opacity-60 hover:opacity-100 transition-opacity"
-        >
-          <X size={13} />
-        </button>
-      </div>
-
-      {/* Body */}
+      {/* Textarea */}
       <textarea
         value={text}
         onChange={(e) => handleTextChange(e.target.value)}
         onBlur={handleBlur}
-        placeholder="Notiz..."
-        rows={4}
-        className="w-full bg-amber-50 text-amber-950 text-sm px-3 py-2 rounded-b-lg resize-none focus:outline-none placeholder-amber-300 border-t border-amber-200 leading-snug"
+        placeholder="Text..."
+        rows={5}
+        className="flex-1 bg-amber-50 text-amber-950 text-sm px-3 py-2 rounded-l-lg resize-none focus:outline-none placeholder-amber-300 leading-snug min-w-0"
       />
+
+      {/* Right strip: drag handle + delete */}
+      <div
+        onMouseDown={handleDragStart}
+        className="cursor-grab active:cursor-grabbing bg-amber-200 hover:bg-amber-300 rounded-r-lg flex flex-col items-center justify-between py-1.5 px-1 select-none transition-colors"
+        style={{ width: 24 }}
+      >
+        <span className="text-amber-700 text-xs leading-none">⠿</span>
+        <button
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={() => onDelete(annotation.id)}
+          className="text-amber-700 hover:text-amber-950 opacity-70 hover:opacity-100 transition-opacity"
+        >
+          <X size={12} />
+        </button>
+      </div>
     </div>
   )
 }

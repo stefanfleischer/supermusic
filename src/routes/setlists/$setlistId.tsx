@@ -208,7 +208,7 @@ function CurrentSongView({
             className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-amber-400/10 hover:bg-amber-400/20 text-amber-300 hover:text-amber-200 text-xs font-medium transition-colors"
           >
             <StickyNote size={13} />
-            + Notiz
+            + Text
           </button>
         </div>
       )}

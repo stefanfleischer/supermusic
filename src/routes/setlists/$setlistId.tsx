@@ -61,69 +61,68 @@ function CurrentSongView({
 
   const parsed = useMemo(() => song ? parseChordPro(song.content) : null, [song])
 
-  // Moment view
+  // Moment view — same layout structure as Song view to avoid nav jumping
   if (entry.momentTitle !== undefined) {
-    const navItems = entries.map((e) =>
-      e.momentTitle !== undefined ? (e.momentTitle || 'Pause') : (songMap.get(e.songId)?.title ?? '–')
-    )
     return (
       <div>
-        {/* Title (like song header) */}
+        {/* Header — mirrors song header height */}
         <div className="mb-4">
-          <h2 className="text-2xl font-bold text-white">{entry.momentTitle || 'Pause'}</h2>
-        </div>
-
-        {/* Nav-only bar */}
-        <div className="flex items-center justify-center gap-2 p-3 bg-slate-800/50 border border-slate-700 rounded-lg mb-6">
-          <button
-            onClick={onPrev}
-            disabled={currentIndex === 0}
-            className="p-1 rounded text-gray-400 hover:text-white hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-          >
-            <ChevronLeft size={18} />
-          </button>
-          <div className="relative">
-            <button
-              onClick={() => setNavOpen((o) => !o)}
-              className="text-gray-400 hover:text-white text-sm font-mono px-2 py-0.5 rounded hover:bg-slate-700 transition-colors"
-            >
-              {currentIndex + 1}/{entries.length}
-            </button>
-            {navOpen && (
-              <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 z-50 bg-slate-800 border border-slate-600 rounded-xl shadow-xl py-1 min-w-48 max-h-64 overflow-y-auto">
-                {navItems.map((title, i) => {
-                  const isMoment = entries[i]?.momentTitle !== undefined
-                  return (
-                    <button
-                      key={i}
-                      onClick={() => { onNavSelect(i); setNavOpen(false) }}
-                      className={`w-full text-left px-4 py-2 text-sm transition-colors flex items-center gap-2 ${
-                        i === currentIndex ? 'bg-cyan-600 text-white' : 'text-gray-300 hover:bg-slate-700 hover:text-white'
-                      }`}
-                    >
-                      <span className="text-gray-500 font-mono text-xs w-5 shrink-0">{i + 1}.</span>
-                      {isMoment && <Clock size={12} className="text-amber-400 shrink-0" />}
-                      <span className={`truncate ${isMoment ? 'italic text-amber-300' : ''}`}>{title}</span>
-                    </button>
-                  )
-                })}
+          <div className="flex items-start justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-white">{entry.momentTitle || 'Pause'}</h2>
+              {/* empty artist line placeholder to match song header height */}
+              <p className="text-gray-400 invisible select-none">‌</p>
+            </div>
+            {/* spacer matching Edit Song + Remove buttons */}
+            <div className="flex items-center gap-2">
+              <div className="px-3 py-2 invisible select-none">
+                <Edit size={16} />
               </div>
-            )}
+              <div className="p-2 invisible select-none">
+                <X size={18} />
+              </div>
+            </div>
           </div>
-          <button
-            onClick={onNext}
-            disabled={currentIndex === entries.length - 1}
-            className="p-1 rounded text-gray-400 hover:text-white hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-          >
-            <ChevronRight size={18} />
-          </button>
+          {/* empty badges row to match song metadata height */}
+          <div className="flex flex-wrap gap-2 mt-3 min-h-[28px]" />
         </div>
 
-        {/* Moment body */}
-        <div className="flex flex-col items-center justify-center py-16 gap-3">
+        {/* TransposeControls — same as song, nav always visible */}
+        <div className="mb-6">
+          <TransposeControls
+            originalKey={null}
+            transposeSemitones={0}
+            capo={0}
+            capoEnabled={false}
+            preferFlats={false}
+            chordFormat={chordFormat}
+            onTransposeChange={() => {}}
+            onCapoChange={() => {}}
+            onCapoEnabledChange={() => {}}
+            onPreferFlatsChange={() => {}}
+            onChordFormatChange={handleChordFormatChange}
+            onPrev={onPrev}
+            onNext={onNext}
+            hasPrev={currentIndex > 0}
+            hasNext={currentIndex < entries.length - 1}
+            navIndex={currentIndex}
+            navTotal={entries.length}
+            navItems={entries.map((e) => e.momentTitle !== undefined ? (e.momentTitle || 'Pause') : (songMap.get(e.songId)?.title ?? '–'))}
+            navItemMoments={entries.map((e) => e.momentTitle !== undefined)}
+            onNavSelect={onNavSelect}
+            showCommentToolbar={showCommentToolbar}
+            onToggleCommentToolbar={() => setShowCommentToolbar((v) => !v)}
+          />
+        </div>
+
+        {/* Moment body — same card style as song content */}
+        <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6 flex flex-col items-center justify-center py-16 gap-3">
           <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center">
             <span className="text-2xl">⏸</span>
           </div>
+          {entry.momentTitle && (
+            <p className="text-amber-300 text-sm">{entry.momentTitle}</p>
+          )}
         </div>
       </div>
     )

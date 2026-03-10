@@ -38,6 +38,8 @@ interface TransposeControlsProps {
   // Comment toolbar toggle
   showCommentToolbar?: boolean
   onToggleCommentToolbar?: () => void
+  // Moment mode: only show nav, hide all other controls
+  momentMode?: boolean
 }
 
 export default function TransposeControls({
@@ -63,6 +65,7 @@ export default function TransposeControls({
   onNavSelect,
   showCommentToolbar,
   onToggleCommentToolbar,
+  momentMode = false,
 }: TransposeControlsProps) {
   const [formatOpen, setFormatOpen] = useState(false)
   const formatRef = useRef<HTMLDivElement>(null)
@@ -99,6 +102,57 @@ export default function TransposeControls({
     const diff = ((newIndex - originalIndex) % 12 + 12) % 12
     const rawSemitones = diff > 6 ? diff - 12 : diff
     onTransposeChange(rawSemitones)
+  }
+
+  if (momentMode) {
+    return (
+      <div className="flex items-center justify-center gap-1 p-3 bg-slate-800/50 border border-slate-700 rounded-lg">
+        <button
+          onClick={onPrev}
+          disabled={!hasPrev}
+          className="p-1 rounded text-gray-400 hover:text-white hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+        >
+          <ChevronLeft size={18} />
+        </button>
+        {navTotal !== undefined && navIndex !== undefined && (
+          <div className="relative" ref={navRef}>
+            <button
+              onClick={() => setNavOpen((o) => !o)}
+              className="text-gray-400 hover:text-white text-sm font-mono px-2 py-0.5 rounded hover:bg-slate-700 transition-colors"
+            >
+              {navIndex + 1}/{navTotal}
+            </button>
+            {navOpen && navItems && (
+              <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 z-50 bg-slate-800 border border-slate-600 rounded-xl shadow-xl py-1 min-w-48 max-h-64 overflow-y-auto">
+                {navItems.map((title, i) => {
+                  const isMoment = navItemMoments?.[i] ?? false
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => { onNavSelect?.(i); setNavOpen(false) }}
+                      className={`w-full text-left px-4 py-2 text-sm transition-colors flex items-center gap-2 ${
+                        i === navIndex ? 'bg-cyan-600 text-white' : 'text-gray-300 hover:bg-slate-700 hover:text-white'
+                      }`}
+                    >
+                      <span className="text-gray-500 font-mono text-xs w-5 shrink-0">{i + 1}.</span>
+                      {isMoment && <Clock size={12} className="text-amber-400 shrink-0" />}
+                      <span className={`truncate ${isMoment ? 'italic text-amber-300' : ''}`}>{title}</span>
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        )}
+        <button
+          onClick={onNext}
+          disabled={!hasNext}
+          className="p-1 rounded text-gray-400 hover:text-white hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+        >
+          <ChevronRight size={18} />
+        </button>
+      </div>
+    )
   }
 
   return (

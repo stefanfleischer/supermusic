@@ -63,31 +63,36 @@ function CurrentSongView({
 
   // Moment view — same layout structure as Song view to avoid nav jumping
   if (entry.momentTitle !== undefined) {
+    const navItemsList = entries.map((e) => e.momentTitle !== undefined ? (e.momentTitle || 'Pause') : (songMap.get(e.songId)?.title ?? '–'))
+    const navItemMomentsList = entries.map((e) => e.momentTitle !== undefined)
     return (
       <div>
-        {/* Header — mirrors song header height */}
+        {/* Header — same structure as song header */}
         <div className="mb-4">
           <div className="flex items-start justify-between">
             <div>
               <h2 className="text-2xl font-bold text-white">{entry.momentTitle || 'Pause'}</h2>
-              {/* empty artist line placeholder to match song header height */}
-              <p className="text-gray-400 invisible select-none">‌</p>
+              {/* invisible artist placeholder — same height as artist line */}
+              <p className="text-gray-400 opacity-0 select-none" aria-hidden>A</p>
             </div>
-            {/* spacer matching Edit Song + Remove buttons */}
-            <div className="flex items-center gap-2">
-              <div className="px-3 py-2 invisible select-none">
+            {/* invisible button placeholders — same width/height as Edit+Remove */}
+            <div className="flex items-center gap-2 opacity-0 pointer-events-none" aria-hidden>
+              <div className="flex items-center gap-2 px-3 py-2 text-sm">
                 <Edit size={16} />
+                Edit Song
               </div>
-              <div className="p-2 invisible select-none">
+              <div className="p-2">
                 <X size={18} />
               </div>
             </div>
           </div>
-          {/* empty badges row to match song metadata height */}
-          <div className="flex flex-wrap gap-2 mt-3 min-h-[28px]" />
+          {/* invisible badge placeholder — same height as badge row */}
+          <div className="flex flex-wrap gap-2 mt-3 opacity-0 pointer-events-none select-none" aria-hidden>
+            <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs">placeholder</span>
+          </div>
         </div>
 
-        {/* TransposeControls — same as song, nav always visible */}
+        {/* TransposeControls — moment mode: only nav */}
         <div className="mb-6">
           <TransposeControls
             originalKey={null}
@@ -107,11 +112,10 @@ function CurrentSongView({
             hasNext={currentIndex < entries.length - 1}
             navIndex={currentIndex}
             navTotal={entries.length}
-            navItems={entries.map((e) => e.momentTitle !== undefined ? (e.momentTitle || 'Pause') : (songMap.get(e.songId)?.title ?? '–'))}
-            navItemMoments={entries.map((e) => e.momentTitle !== undefined)}
+            navItems={navItemsList}
+            navItemMoments={navItemMomentsList}
             onNavSelect={onNavSelect}
-            showCommentToolbar={showCommentToolbar}
-            onToggleCommentToolbar={() => setShowCommentToolbar((v) => !v)}
+            momentMode
           />
         </div>
 

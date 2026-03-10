@@ -71,9 +71,45 @@ export type Database = {
         }
         Relationships: []
       }
+      song_annotations: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          song_id: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id?: string
+          song_id: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          song_id?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "song_annotations_song_id_fkey"
+            columns: ["song_id"]
+            isOneToOne: false
+            referencedRelation: "songs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       songs: {
         Row: {
           artist: string
+          books: string[] | null
           capo: number
           ccli: string | null
           content: string
@@ -89,6 +125,7 @@ export type Database = {
         }
         Insert: {
           artist?: string
+          books?: string[] | null
           capo?: number
           ccli?: string | null
           content?: string
@@ -104,6 +141,7 @@ export type Database = {
         }
         Update: {
           artist?: string
+          books?: string[] | null
           capo?: number
           ccli?: string | null
           content?: string

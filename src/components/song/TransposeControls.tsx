@@ -112,7 +112,14 @@ export default function TransposeControls({
           Key
         </span>
         <button
-          onClick={() => onTransposeChange(transposeSemitones - 1)}
+          onClick={() => {
+            const newSemitones = transposeSemitones - 1
+            onTransposeChange(newSemitones)
+            if (originalKey) {
+              const newKey = transposeKey(originalKey, newSemitones, true)
+              onPreferFlatsChange(keyUsesFlats(newKey))
+            }
+          }}
           className="p-1 rounded hover:bg-slate-700 text-gray-400 hover:text-white transition-colors"
         >
           <Minus size={16} />
@@ -133,7 +140,14 @@ export default function TransposeControls({
           <span className="text-gray-500 text-sm px-2">–</span>
         )}
         <button
-          onClick={() => onTransposeChange(transposeSemitones + 1)}
+          onClick={() => {
+            const newSemitones = transposeSemitones + 1
+            onTransposeChange(newSemitones)
+            if (originalKey) {
+              const newKey = transposeKey(originalKey, newSemitones, true)
+              onPreferFlatsChange(keyUsesFlats(newKey))
+            }
+          }}
           className="p-1 rounded hover:bg-slate-700 text-gray-400 hover:text-white transition-colors"
         >
           <Plus size={16} />
